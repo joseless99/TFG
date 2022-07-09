@@ -44,28 +44,24 @@ void loop() {
        frenado();
        delay(50);
       //Activamos los pines de cada motor para el avanze del vehiculo
-      digitalWrite(M1AVANCE,HIGH);
-      digitalWrite(M2AVANCE,HIGH);
+      avance();
     }else if(dato=='B'){//Retroceso del vehiculo
       //Previa detencion del vehiculo para el la correcta configuracion final    
       frenado();
       delay(50);
       //Activamos los pines de cada motor para el retroceso del vehiculo
-      digitalWrite(M1RETROCESO,HIGH);
-      digitalWrite(M2RETROCESO,HIGH);
+      retroceso();
 
     }else if(dato=='R'){//Giro a la derecha del vehiculo
       //Previa detencion del vehiculo para el la correcta configuracion final    
       frenado();
       //Activamos los pines de cada motor para el retroceso del vehiculo
-      digitalWrite(M1AVANCE,HIGH);
-      digitalWrite(M2RETROCESO,HIGH);
+      giroDerecha();
     }else if(dato=='L'){//Giro a la izquierda del vehiculo
       //Previa detencion del vehiculo para el la correcta configuracion final    
       frenado();
       //Activamos los pines de cada motor para el retroceso del vehiculo
-      digitalWrite(M1RETROCESO,HIGH);
-      digitalWrite(M2AVANCE,HIGH);
+      giroIzquierda();
     }else if(dato=='S'){//Detencion del vehiculo  
       //Solo basta con llamar a la funcion motoStop()                 
        frenado();
@@ -75,7 +71,7 @@ void loop() {
 }
 
 /**
- * Funcion del arduino encargada de configurar los pines de los motores en el estado de Detencion (Stop)
+ * Funcion del arduino encargada de configurar los pines de los motores en el estado de detencion (Stop)
  * Este estado se consigue estableciendo a LOW todos y cada uno de los pines dedicados a los 2 motores del arduino
  * Su frecuente uso es para evitar cortocircuitos en las conexiones electronicas a los motores
  */
@@ -87,15 +83,43 @@ void frenado(){
   digitalWrite(M2RETROCESO,LOW);
 }
 
+/**
+ * Funcion encargada de configurar los pines de los motores para el avance del vehiculo
+ * Solo activa los pines necesarios para el avance, ya que se asume que todos los pines estan en LOW, previo a la llamada a esta
+ */
 void avance(){
 
+      digitalWrite(M1AVANCE,HIGH);
+      digitalWrite(M2AVANCE,HIGH);
 }
+
+
+/**
+ * Funcion encargada de configurar los pines de los motores para el retroceso del vehiculo
+ * Solo activa los pines necesarios para el retroceso, ya que se asume que todos los pines estan en LOW, previo a la llamada a esta
+ */
 void retroceso(){
 
+    digitalWrite(M1RETROCESO,HIGH);
+    digitalWrite(M2RETROCESO,HIGH);
 }
+
+/**
+ * Funcion encargada de configurar los pines de los motores para el giro a la izquierda del vehiculo
+ * Solo activa los pines necesarios para el giro a la izquierda, ya que se asume que todos los pines estan en LOW, previo a la llamada a esta
+ */
 void giroIzquierda(){
 
+    digitalWrite(M1RETROCESO,HIGH);
+    digitalWrite(M2AVANCE,HIGH);
 }
+
+/**
+ * Funcion encargada de configurar los pines de los motores para el giro a la derecha del vehiculo
+ * Solo activa los pines necesarios para el giro a la derecha, ya que se asume que todos los pines estan en LOW, previo a la llamada a esta
+ */
 void giroDerecha(){
 
+      digitalWrite(M1AVANCE,HIGH);
+      digitalWrite(M2RETROCESO,HIGH);
 }
