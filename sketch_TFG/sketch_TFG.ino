@@ -41,14 +41,14 @@ void loop() {
     //Comparamos los datos recibidos del monitor Serial1 con las posibles acciones a ejecutar
     if(dato=='F'){//Avance del vehiculo
      //Previa detencion del vehiculo para el la correcta configuracion final    
-       motorStop();
+       frenado();
        delay(50);
       //Activamos los pines de cada motor para el avanze del vehiculo
       digitalWrite(M1AVANCE,HIGH);
       digitalWrite(M2AVANCE,HIGH);
     }else if(dato=='B'){//Retroceso del vehiculo
       //Previa detencion del vehiculo para el la correcta configuracion final    
-      motorStop();
+      frenado();
       delay(50);
       //Activamos los pines de cada motor para el retroceso del vehiculo
       digitalWrite(M1RETROCESO,HIGH);
@@ -56,19 +56,19 @@ void loop() {
 
     }else if(dato=='R'){//Giro a la derecha del vehiculo
       //Previa detencion del vehiculo para el la correcta configuracion final    
-      motorStop();
+      frenado();
       //Activamos los pines de cada motor para el retroceso del vehiculo
       digitalWrite(M1AVANCE,HIGH);
       digitalWrite(M2RETROCESO,HIGH);
     }else if(dato=='L'){//Giro a la izquierda del vehiculo
       //Previa detencion del vehiculo para el la correcta configuracion final    
-      motorStop();
+      frenado();
       //Activamos los pines de cada motor para el retroceso del vehiculo
       digitalWrite(M1RETROCESO,HIGH);
       digitalWrite(M2AVANCE,HIGH);
     }else if(dato=='S'){//Detencion del vehiculo  
       //Solo basta con llamar a la funcion motoStop()                 
-       motorStop();
+       frenado();
        delay(50);
     }       
   }
@@ -79,10 +79,23 @@ void loop() {
  * Este estado se consigue estableciendo a LOW todos y cada uno de los pines dedicados a los 2 motores del arduino
  * Su frecuente uso es para evitar cortocircuitos en las conexiones electronicas a los motores
  */
-void motorStop(){
+void frenado(){
       
   digitalWrite(M1AVANCE,LOW);
   digitalWrite(M1RETROCESO,LOW);
   digitalWrite(M2AVANCE,LOW);
   digitalWrite(M2RETROCESO,LOW);
+}
+
+void avance(){
+
+}
+void retroceso(){
+
+}
+void giroIzquierda(){
+
+}
+void giroDerecha(){
+
 }
