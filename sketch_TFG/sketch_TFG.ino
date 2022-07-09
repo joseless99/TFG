@@ -16,9 +16,9 @@ char dato;//Variable que almacena los datos que se leen del modulo bluetooth
 void setup() {
  //Iniciamos monitores a usar.Serial es solo usado para verificar el envio y recepcion de datos correcto
   Serial.begin(9600);//Deshabilitar para la version final
-  Serial1.begin(9600);
+  Serial1.begin(9600);//Monitor de comunicacion para el modulo bluetooth.Conectar dicho modulo a pines 0,1
   
-  //Configracion inical de los pines de los motores y de variables globales a usar
+  //Configracion inical de los pines de los motores y de variables globales usadas
   pinMode(M1AVANCE,OUTPUT);
   pinMode(M1RETROCESO,OUTPUT);
   pinMode(M2AVANCE,OUTPUT);
@@ -33,40 +33,46 @@ void setup() {
   
 }
 void loop() {
+  
   //Verificamos si existen datos recibidos por el canal de comunicacion en el que esta el modulo bluetooth
   if(Serial1.available()>0){
+      
       dato=Serial1.read();//Guardamos los datos del canal de comunicacion BT en la variable dato
+      
       //Usado en pruebas para verificar correcta recepcion de mensajes
       Serial.write(dato);//Deshabilitar para version final
-    //Comparamos los datos recibidos del monitor Serial1 con las posibles acciones a ejecutar
-    if(dato=='F'){//Avance del vehiculo
-     //Previa detencion del vehiculo para el la correcta configuracion final    
-       frenado();
-       delay(50);
-      //Activamos los pines de cada motor para el avanze del vehiculo
-      avance();
-    }else if(dato=='B'){//Retroceso del vehiculo
-      //Previa detencion del vehiculo para el la correcta configuracion final    
-      frenado();
-      delay(50);
-      //Activamos los pines de cada motor para el retroceso del vehiculo
-      retroceso();
-
-    }else if(dato=='R'){//Giro a la derecha del vehiculo
-      //Previa detencion del vehiculo para el la correcta configuracion final    
-      frenado();
-      //Activamos los pines de cada motor para el retroceso del vehiculo
-      giroDerecha();
-    }else if(dato=='L'){//Giro a la izquierda del vehiculo
-      //Previa detencion del vehiculo para el la correcta configuracion final    
-      frenado();
-      //Activamos los pines de cada motor para el retroceso del vehiculo
-      giroIzquierda();
-    }else if(dato=='S'){//Detencion del vehiculo  
-      //Solo basta con llamar a la funcion motoStop()                 
-       frenado();
-       delay(50);
-    }       
+      
+      //Comparamos los datos recibidos del monitor Serial1 con las posibles acciones a ejecutar
+      //Para cada accion, ejecuta primero frenado(), y tras un pequeño delay se configura los pines para la accion recibida del modulo
+      if(dato=='F'){//Avance del vehiculo
+       
+        frenado();
+        delay(50);
+        avance();
+        
+      }else if(dato=='B'){//Retroceso del vehiculo
+       
+        frenado();
+        delay(50);
+        retroceso();
+  
+      }else if(dato=='R'){//Giro a la derecha del vehiculo
+        
+        frenado();
+        delay(50);
+        giroDerecha();
+        
+      }else if(dato=='L'){//Giro a la izquierda del vehiculo
+        
+        frenado();
+        delay(50);
+        giroIzquierda();
+        
+      }else if(dato=='S'){//Detencion del vehiculo  
+        
+         frenado();
+         delay(50);
+      }       
   }
 }
 
@@ -89,8 +95,8 @@ void frenado(){
  */
 void avance(){
 
-      digitalWrite(M1AVANCE,HIGH);
-      digitalWrite(M2AVANCE,HIGH);
+    digitalWrite(M1AVANCE,HIGH);
+    digitalWrite(M2AVANCE,HIGH);
 }
 
 
@@ -120,6 +126,6 @@ void giroIzquierda(){
  */
 void giroDerecha(){
 
-      digitalWrite(M1AVANCE,HIGH);
-      digitalWrite(M2RETROCESO,HIGH);
+    digitalWrite(M1AVANCE,HIGH);
+    digitalWrite(M2RETROCESO,HIGH);
 }
