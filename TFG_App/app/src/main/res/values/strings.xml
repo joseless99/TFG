@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">TFG_App</string>
+    <string name="stop">Stop</string>
+    <string name="backwards">Backwards</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
+    <string name="forward">Forward</string>
+    <string name="currently_there_s_no_bluetooth_device_coneceted_with_the_phone">Currently, there\'s no bluetooth device coneceted with the phone</string>
+    <string name="currently_there_s_no_bluetooth_device_nconeceted_with_the_phone">currently there\'s no bluetooth device\nconeceted with the phone</string>
+    <string name="ShowTexts">There_s_no_bluetooth_device_coneceted_with_the_phone</string>
+    <string name="There_s_no_bluetooth_device_coneceted_with_the_phone" />
+</resources>
