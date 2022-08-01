@@ -39,7 +39,13 @@ void setup() {
 
 void loop() {
   if(uSensor()<=5.0){
-    
+    frenado();
+    retroceso();
+    delay(1000);
+    frenado();
+    giroDerecha();
+    delay(1000);
+    frenado();
   }else if(Serial1.available()>0){//Verificamos si existen datos recibidos por el canal de comunicacion en el que esta el modulo bluetooth
       
       dato=Serial1.read();//Guardamos los datos del canal de comunicacion BT en la variable dato
@@ -52,31 +58,26 @@ void loop() {
       if(dato=='F'){//Avance del vehiculo
        
         frenado();
-        delay(50);
         avance();
         
       }else if(dato=='B'){//Retroceso del vehiculo
        
         frenado();
-        delay(50);
         retroceso();
   
       }else if(dato=='R'){//Giro a la derecha del vehiculo
         
         frenado();
-        delay(50);
         giroDerecha();
         
       }else if(dato=='L'){//Giro a la izquierda del vehiculo
         
         frenado();
-        delay(50);
         giroIzquierda();
         
       }else if(dato=='S'){//Detencion del vehiculo  
         
          frenado();
-         delay(50);
       }       
   }
 }
@@ -92,6 +93,7 @@ void frenado(){
   digitalWrite(M1RETROCESO,LOW);
   digitalWrite(M2AVANCE,LOW);
   digitalWrite(M2RETROCESO,LOW);
+  delay(50);
 }
 
 /**
