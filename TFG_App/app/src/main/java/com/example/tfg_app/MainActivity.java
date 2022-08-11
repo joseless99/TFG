@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Funcion encargada de resetear los colores de los botones del main_activity_layout.xml al color inicial definicdo
      */
-    public void resetColor(){
+    private void resetColor(){
         //Variable que almacena el color defaul de los botones
         //Cambiar su valor en caso de cambiar el color default de los botones
         int defaultButtonColor= Color.parseColor("#0000FF");
