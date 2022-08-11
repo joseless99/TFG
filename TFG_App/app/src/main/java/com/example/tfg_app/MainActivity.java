@@ -8,6 +8,7 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
@@ -61,6 +62,13 @@ public class MainActivity extends AppCompatActivity {
             //en caso de disponer de bluetooth, verificamos si esta activado o no
             if (!bluetoothAdapter.isEnabled()) {//caso de no estar activado el bluetooth
                 setContentView(R.layout.bt_disable_layout);//Cargamos una vista de error
+                Button en = (Button) findViewById(R.id.actBlue);
+                en.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        restartApp();
+                    }
+                });
             } else {//Si el bluetooth esta activado
 
                 //Iniciamos la conexion con el dispositivo bluetooth
@@ -257,5 +265,13 @@ public class MainActivity extends AppCompatActivity {
         bR.setBackgroundColor(defaultButtonColor);
         bL.setBackgroundColor(defaultButtonColor);
 
+    }
+    private void restartApp(){
+
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},0);
+        }
+        bluetoothAdapter.enable();
+        Intent a=new Intent(this,MainActivity.class);
     }
 }
