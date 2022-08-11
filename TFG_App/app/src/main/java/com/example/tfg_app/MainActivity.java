@@ -91,19 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     bF.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
-                            //Verificamos que aun estamos conectados al modulo bluetooth
-                            if (blueSocket.isConnected() && btt != null) {
-                                //Enviamos el comando de funcionamiento al modulo bluetooth
-                                btt.write("F".getBytes());
-                                //establecemos los botones a color original
-                                resetColor();
-                                //Cambiamos el color para reflejar que fuel el ultimo que se pulso
-                                bF.setBackgroundColor(Color.GREEN);
-                            } else {
-                                //Pequeño mensaje de error, en caso de haber un fallo de envio
-                                Toast.makeText(MainActivity.this, "Message could not be sent", Toast.LENGTH_SHORT).show();
-                            }
+                            sendMessage("F");
                         }
                     });
 
@@ -111,21 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     bB.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
-                            //Verificamos que aun estamos conectados al modulo bluetooth
-                            if (blueSocket.isConnected() && btt != null) {
-
-                                //Enviamos el comando de funcionamiento al modulo bluetooth
-                                btt.write("B".getBytes());
-
-                                    //establecemos los botones a color original
-                                    resetColor();
-                                    //Cambiamos el color para reflejar que fuel el ultimo que se pulso
-                                    bB.setBackgroundColor(Color.GREEN);
-                            } else {
-                                //Pequeño mensaje de error, en caso de haber un fallo de envio
-                                Toast.makeText(MainActivity.this, "Message could not be sent", Toast.LENGTH_SHORT).show();
-                            }
+                            sendMessage("B");
                         }
                     });
 
@@ -133,20 +107,7 @@ public class MainActivity extends AppCompatActivity {
                     bR.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
-                            //Verificamos que aun estamos conectados al modulo bluetooth
-                            if (blueSocket.isConnected() && btt != null) {
-
-                                //Enviamos el comando de funcionamiento al modulo bluetooth
-                                btt.write("R".getBytes());
-                                //establecemos los botones a color original
-                                resetColor();
-                                //Cambiamos el color para reflejar que fuel el ultimo que se pulso
-                                bR.setBackgroundColor(Color.GREEN);
-                            } else {
-                                //Pequeño mensaje de error, en caso de haber un fallo de envio
-                                Toast.makeText(MainActivity.this, "Message could not be sent", Toast.LENGTH_SHORT).show();
-                            }
+                            sendMessage("R");
                         }
                     });
 
@@ -154,22 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     bL.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
-                            //Verificamos que aun estamos conectados al modulo bluetooth
-                            if (blueSocket.isConnected() && btt != null) {
-
-                                //Enviamos el comando de funcionamiento al modulo bluetooth
-                                btt.write("L".getBytes());
-
-                                //establecemos los botones a color original
-                                resetColor();
-                                //Cambiamos el color para reflejar que fuel el ultimo que se pulso
-                                bL.setBackgroundColor(Color.GREEN);
-
-                            } else {
-                                //Pequeño mensaje de error, en caso de haber un fallo de envio
-                                Toast.makeText(MainActivity.this, "Message could not be sent", Toast.LENGTH_SHORT).show();
-                            }
+                            sendMessage("L");
                         }
                     });
 
@@ -178,19 +124,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
 
-                            //Verificamos que aun estamos conectados al modulo bluetooth
-                            if (blueSocket.isConnected() && btt != null) {
-
-                                //Enviamos el comando de funcionamiento al modulo bluetooth
-                                btt.write("S".getBytes());
-                                //establecemos los botones a color original
-                                resetColor();
-                                //Cambiamos el color para reflejar que fuel el ultimo que se pulso
-                                bS.setBackgroundColor(Color.GREEN);
-                            } else {
-                                //Pequeño mensaje de error, en caso de haber un fallo de envio
-                                Toast.makeText(MainActivity.this, "Message could not be sent", Toast.LENGTH_SHORT).show();
-                            }
+                            sendMessage("S");
                         }
                     });
                 }else {//Comunicacion fallida
@@ -273,5 +207,21 @@ public class MainActivity extends AppCompatActivity {
         }
         bluetoothAdapter.enable();
         Intent a=new Intent(this,MainActivity.class);
+    }
+
+    private void sendMessage(String data){
+
+        //Verificamos que aun estamos conectados al modulo bluetooth
+        if (blueSocket.isConnected() && btt != null) {
+            //Enviamos el comando de funcionamiento al modulo bluetooth
+            btt.write(data.getBytes());
+            //establecemos los botones a color original
+            resetColor();
+            //Cambiamos el color para reflejar que fuel el ultimo que se pulso
+            bF.setBackgroundColor(Color.GREEN);
+        } else {
+            //Pequeño mensaje de error, en caso de haber un fallo de envio
+            Toast.makeText(MainActivity.this, "Message could not be sent", Toast.LENGTH_SHORT).show();
+        }
     }
 }
