@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -123,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
                     bS.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
                             sendMessage("S");
                         }
                     });
@@ -200,28 +200,83 @@ public class MainActivity extends AppCompatActivity {
         bL.setBackgroundColor(defaultButtonColor);
 
     }
+
+    /**
+     * Funcion que se encarga de reinicar la aplicacion.
+     */
     private void restartApp(){
 
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},0);
         }
         bluetoothAdapter.enable();
+        finConexion();
         Intent a=new Intent(this,MainActivity.class);
     }
 
+    /**
+     * Funcion encargada de enviar mensajes al vehiculo con el que se comunica
+     * @param data: Informacion a enviar al receptor
+     */
     private void sendMessage(String data){
 
         //Verificamos que aun estamos conectados al modulo bluetooth
         if (blueSocket.isConnected() && btt != null) {
             //Enviamos el comando de funcionamiento al modulo bluetooth
             btt.write(data.getBytes());
-            //establecemos los botones a color original
-            resetColor();
-            //Cambiamos el color para reflejar que fuel el ultimo que se pulso
-            bF.setBackgroundColor(Color.GREEN);
+            //Actualizamos la UI para reflejar que fuel el ultimo que se pulso
+            updateUI(data);
         } else {
             //Pequeño mensaje de error, en caso de haber un fallo de envio
             Toast.makeText(MainActivity.this, "Message could not be sent", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Funcion que actualiza los colores de los botones en funcion de aquel que se haya pulsado.
+     *
+     *  Esta primero llama a resetColor() para reestablecer los botones al color original(Azul)
+     *  Despues cambia el ultimo boton pulsado a color verde para relfejar cual fue activado
+     *
+     * @param data Valor para saber que boton hay que cambiar a verde
+     */
+    private void updateUI(String data){
+        //LLamada a la funcion resetClor()
+        resetColor();
+
+        //Decidimos que boton hemos de actualizar a verde
+        if(data.equals("F")){
+            bF.setBackgroundColor(Color.GREEN);
+        }else if(data.equals("B")){
+            bB.setBackgroundColor(Color.GREEN);
+        }else if(data.equals("R")){
+            bR.setBackgroundColor(Color.GREEN);
+        }else if(data.equals("L")){
+            bL.setBackgroundColor(Color.GREEN);
+        }else if(data.equals("S")){
+            bS.setBackgroundColor(Color.GREEN);
+        }
+    }
+
+    /**
+     * Funcion encargada de cerrar la conexion con el modulo bluetooth receptor
+     */
+    private void finConexion(){
+        //Comprobamos si hay abierta una conexion (cuando blueSocket no es null)
+        if(blueSocket!=null)
+        try {
+            //Cerramos conexion
+            blueSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Ponemos la variable blueSocket a null para garantizar que se acaba la conexion EN cualquier caso posible
+        blueSocket=null;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        finConexion();
     }
 }
