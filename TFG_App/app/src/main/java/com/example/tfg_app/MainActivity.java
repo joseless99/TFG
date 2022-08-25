@@ -212,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
         bluetoothAdapter.enable();
         finConexion();
         Intent a=new Intent(this,MainActivity.class);
+        //startActivity(a);
     }
 
     /**
