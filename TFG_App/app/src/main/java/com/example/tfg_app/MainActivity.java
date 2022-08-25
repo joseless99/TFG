@@ -129,6 +129,9 @@ public class MainActivity extends AppCompatActivity {
                             sendMessage("S");
                         }
                     });
+
+                    sendMessage("0");
+
                 }else {//Comunicacion fallida
                     Toast.makeText(MainActivity.this, "Error de conexion con el modulo bluetooth HC-06", Toast.LENGTH_SHORT) .show();
                 }
@@ -178,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
             //Creamos e iniciamos el therad usado para la comunicacion bluetooth
             btt=new ConnectedThread(blueSocket);
             btt.start();
-                
             //Retornamos exito de comunicacion
             return true;
         }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
@@ -296,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
+        sendMessage("1");
         finConexion();
     }
 }
