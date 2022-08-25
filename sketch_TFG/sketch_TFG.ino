@@ -14,6 +14,7 @@
 #define TRIGGER 8
 #define ECHO 7
 char dato;//Variable que almacena los datos que se leen del modulo bluetooth
+bool activo;
 void setup() {
  //Iniciamos monitores a usar.Serial es solo usado para verificar el envio y recepcion de datos correcto
   Serial.begin(9600);//Deshabilitar para la version final
@@ -34,51 +35,67 @@ void setup() {
   digitalWrite(TRIGGER,LOW);
 
   dato=' ';
-  
+  activo=false;
 }
 
 void loop() {
-    if(Serial1.available()>0){//Verificamos si existen datos recibidos por el canal de comunicacion en el que esta el modulo bluetooth
+  if(activo==true){
+        if(Serial1.available()>0){//Verificamos si existen datos recibidos por el canal de comunicacion en el que esta el modulo bluetooth
+          
+          dato=Serial1.read();//Guardamos los datos del canal de comunicacion BT en la variable dato
+          
+          //Usado en pruebas para verificar correcta recepcion de mensajes
+          Serial.write(dato);//Borrar para version final
+          
+          //Comparamos los datos recibidos del monitor Serial1 con las posibles acciones a ejecutar
+          //Para cada accion, ejecuta primero frenado(), y tras un pequeño delay se configura los pines para la accion recibida del modulo
+          if(dato=='F'){//Avance del vehiculo
+           
+            frenado();
+            avance();
+            
+          }else if(dato=='B'){//Retroceso del vehiculo
+           
+            frenado();
+            retroceso();
       
-      dato=Serial1.read();//Guardamos los datos del canal de comunicacion BT en la variable dato
-      
-      //Usado en pruebas para verificar correcta recepcion de mensajes
-      Serial.write(dato);//Deshabilitar para version final
-      
-      //Comparamos los datos recibidos del monitor Serial1 con las posibles acciones a ejecutar
-      //Para cada accion, ejecuta primero frenado(), y tras un pequeño delay se configura los pines para la accion recibida del modulo
-      if(dato=='F'){//Avance del vehiculo
-       
-        frenado();
-        avance();
-        
-      }else if(dato=='B'){//Retroceso del vehiculo
-       
+          }else if(dato=='R'){//Giro a la derecha del vehiculo
+            
+            frenado();
+            giroDerecha();
+            
+          }else if(dato=='L'){//Giro a la izquierda del vehiculo
+            
+            frenado();
+            giroIzquierda();
+            
+          }else if(dato=='S'){//Detencion del vehiculo  
+            
+             frenado();
+          }else if(dato=='1')//Finalizacion de comunicacion con el emisor
+          {
+            frenado();//detenemos el vehiculo para que no pierda el control
+            activo=false;//Impedimos que el sistema siga funcionando
+            Serial.print("Desactivado\n");//Mensaje de prueba en el arduino. Borrar en la version final
+          }       
+      }else if(uSensor()<=5.0){
         frenado();
         retroceso();
-  
-      }else if(dato=='R'){//Giro a la derecha del vehiculo
-        
+        delay(1000);
         frenado();
         giroDerecha();
-        
-      }else if(dato=='L'){//Giro a la izquierda del vehiculo
-        
+        delay(1000);
         frenado();
-        giroIzquierda();
-        
-      }else if(dato=='S'){//Detencion del vehiculo  
-        
-         frenado();
-      }       
-  }else if(uSensor()<=5.0){
-    frenado();
-    retroceso();
-    delay(1000);
-    frenado();
-    giroDerecha();
-    delay(1000);
-    frenado();
+      }
+  }else{//En caso de que la comunicacion este desactivada verificamos si se ha recibido un mensaje de haber iniciado comunicaciones
+    if(Serial1.available()>0){//Verificamos si se han enviado datos de inicio
+        if(Serial1.read()=='0'){//Si se recibe el comando correcto
+          activo=true;//Activamos el sistema del coche
+          Serial.print("Activado\n");//Mensaje de prueba en el arduino. Borrar en la version final
+        }else{
+          activo=false;
+        }
+      }
   }
 }
 
