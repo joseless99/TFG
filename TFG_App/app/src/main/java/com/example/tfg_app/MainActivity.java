@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
     ConnectedThread btt = null;//Hilo de comunicaciones de bluetooth
     private static final UUID blueUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
     public static final String blueMac = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
-
     //Codigos de identificacion de permisos de bluetooth
     //private static final int BLUETOOTH_CONNECT_CODE = 100;
     //Botones usados en las vistas
@@ -51,13 +50,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.blank_layout);
         // Adaptador bluetooth
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //Verificamos que el dispositivo bluetooth es capaz de usar bluetooth
         if (bluetoothAdapter == null) {
-            //cargamos vista para indicar que no posee BT compatible
-            //toDo: Vista para cuando no se tiene bluetooth
             setContentView(R.layout.bt_non_existent_layout);
         } else {
             //en caso de disponer de bluetooth, verificamos si esta activado o no
@@ -67,11 +64,16 @@ public class MainActivity extends AppCompatActivity {
                 en.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        //Cambiamos el layout para evitar multiples activaciones de la accion
+                        setContentView(R.layout.blank_layout);
                         restartApp();
                     }
                 });
-            } else {//Si el bluetooth esta activado
 
+
+            } else {//Si el bluetooth esta activado
+                //MEnsaje informativo para el usuario
+                Toast.makeText(MainActivity.this,"Iniciando Comunicacion.Espere un poco",Toast.LENGTH_SHORT).show();
                 //Iniciamos la conexion con el dispositivo bluetooth
                 if (iniciarComBlue()) {//Conexion exitosa
                     //Pequelo mensaje de confirmacion de conexion
@@ -176,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
             //Creamos e iniciamos el therad usado para la comunicacion bluetooth
             btt=new ConnectedThread(blueSocket);
             btt.start();
-
+                
             //Retornamos exito de comunicacion
             return true;
         }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
@@ -204,15 +206,31 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Funcion que se encarga de reinicar la aplicacion.
      */
-    private void restartApp(){
-
+    private void restartApp()  {
+        //Verificamos si tenemos los permisos necesarios para habilitar el modulo bluetooth
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
+            //Solicitamos los permisos al sistema
             ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},0);
         }
-        bluetoothAdapter.enable();
-        finConexion();
+        finConexion();//Aseguramos que cerramos el socket
+        bluetoothAdapter.enable();//Activamos el bluetooth
+
+        //Detenemos la app por 0.5segundos para garantizar el correcto inicio del bluetooth del movil
+        try {
+            //Mensaje informativo para el usuario
+            Toast.makeText(MainActivity.this,"Reiniciando espere un poco",Toast.LENGTH_SHORT).show();
+            //Delay aplicado a la app
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //Creamos el Intent necesario para reinicar la app
         Intent a=new Intent(this,MainActivity.class);
+        //Reiniciamos la app
         startActivity(a);
+        //Teminamos con la previa activa
+        finish();
     }
 
     /**
