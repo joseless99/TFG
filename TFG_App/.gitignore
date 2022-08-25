@@ -13,7 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
-TFG_App/app/debug/app_debug.apk
-TFG_App/app/debug/app-debug.apk
 
 
