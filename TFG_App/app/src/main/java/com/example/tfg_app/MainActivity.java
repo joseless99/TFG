@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothSocket blueSocket;//Socket para la comunicacion por bluetooth
     BluetoothDevice blueDevice;//Variable para el dispisitivo bluetooth
     ConnectedThread btt = null;//Hilo de comunicaciones de bluetooth
+    //Constantes necesarias
     private static final UUID blueUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
     public static final String blueMac = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
     //Codigos de identificacion de permisos de bluetooth
