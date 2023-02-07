@@ -24,7 +24,7 @@ import java.util.UUID;
  * Clase principal de la aplicacion Android desarrollada para el TFG
  *
  * Esta aplicacion se encarga de establecer una comunicacion con un modulo bluetooth HC-06, el cual estara conectado
- * a un Arduino Leonardo. Tras establecerse la conexion con el modulo se carga el layout principal (main_activity_layout.xml)
+ * a un Arduino Leonardo. Tras establecerse la conexion con el modulo se carga el layout principal (system_1_layout.xml)
  * el cual contiene ciertos botones los cuales al pulsarse envian un mensaje al modulo HC-06, y el arduino los
  * interpreta como una orden, cambiando el estado de ciertos pines del mismo.
  *
@@ -34,7 +34,7 @@ import java.util.UUID;
  * @author Juan Jose Ropero Cerro (i82rocej)
  * @version 1.0
  */
-public class MainActivity extends AppCompatActivity {
+public class System1Activity extends AppCompatActivity {
     //Variables para poder usar bluetooth
     BluetoothAdapter bluetoothAdapter;//Variable para identificar el modulo bluetooth del dispositivo android
     BluetoothSocket blueSocket;//Socket para la comunicacion por bluetooth
@@ -74,16 +74,16 @@ public class MainActivity extends AppCompatActivity {
 
             } else {//Si el bluetooth esta activado
                 //MEnsaje informativo para el usuario
-                Toast.makeText(MainActivity.this,"Iniciando Comunicacion.Espere un poco",Toast.LENGTH_SHORT).show();
+                Toast.makeText(System1Activity.this,"Iniciando Comunicacion.Espere un poco",Toast.LENGTH_SHORT).show();
                 //Iniciamos la conexion con el dispositivo bluetooth
                 if (iniciarComBlue()) {//Conexion exitosa
                     //Pequelo mensaje de confirmacion de conexion
-                    Toast.makeText(MainActivity.this, "Conexion establecida con el modulo bluetooth", Toast.LENGTH_SHORT) .show();
+                    Toast.makeText(System1Activity.this, "Conexion establecida con el modulo bluetooth", Toast.LENGTH_SHORT) .show();
 
                     //Cargamos la vista principal de la app
-                    setContentView(R.layout.main_activity_layout);
+                    setContentView(R.layout.system_1_layout);
 
-                    //Sincronizamos los botones del layout con los definidos en MainActivity
+                    //Sincronizamos los botones del layout con los definidos en System1Activity
                     bF = findViewById(R.id.bForward);
                     bB = findViewById(R.id.bBack);
                     bR = findViewById(R.id.bRight);
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                     sendMessage("0");
 
                 }else {//Comunicacion fallida
-                    Toast.makeText(MainActivity.this, "Error de conexion con el modulo bluetooth HC-06", Toast.LENGTH_SHORT) .show();
+                    Toast.makeText(System1Activity.this, "Error de conexion con el modulo bluetooth HC-06", Toast.LENGTH_SHORT) .show();
                 }
             }
         }
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Funcion encargada de resetear los colores de los botones del main_activity_layout.xml al color inicial definicdo
+     * Funcion encargada de resetear los colores de los botones del system_1_layout.xml al color inicial definicdo
      */
     private void resetColor(){
         //Variable que almacena el color defaul de los botones
@@ -211,9 +211,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private void restartApp()  {
         //Verificamos si tenemos los permisos necesarios para habilitar el modulo bluetooth
-        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(System1Activity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
             //Solicitamos los permisos al sistema
-            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},0);
+            ActivityCompat.requestPermissions(System1Activity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},0);
         }
         finConexion();//Aseguramos que cerramos el socket
         bluetoothAdapter.enable();//Activamos el bluetooth
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
         //Detenemos la app por 0.5segundos para garantizar el correcto inicio del bluetooth del movil
         try {
             //Mensaje informativo para el usuario
-            Toast.makeText(MainActivity.this,"Reiniciando espere un poco",Toast.LENGTH_SHORT).show();
+            Toast.makeText(System1Activity.this,"Reiniciando espere un poco",Toast.LENGTH_SHORT).show();
             //Delay aplicado a la app
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Creamos el Intent necesario para reinicar la app
-        Intent a=new Intent(this,MainActivity.class);
+        Intent a=new Intent(this, System1Activity.class);
         //Reiniciamos la app
         startActivity(a);
         //Teminamos con la previa activa
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
             updateUI(data);
         } else {
             //Pequeño mensaje de error, en caso de haber un fallo de envio
-            Toast.makeText(MainActivity.this, "Message could not be sent", Toast.LENGTH_SHORT).show();
+            Toast.makeText(System1Activity.this, "Message could not be sent", Toast.LENGTH_SHORT).show();
         }
     }
 
