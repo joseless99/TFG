@@ -21,28 +21,28 @@ import java.io.IOException;
 import java.util.UUID;
 
 /**
- * Clase principal de la aplicacion Android desarrollada para el TFG
+ * Actividad de ejemplo de la aplicacion Android desarrollada para el TFG
  *
- * Esta aplicacion se encarga de establecer una comunicacion con un modulo bluetooth HC-06, el cual estara conectado
- * a un Arduino Leonardo. Tras establecerse la conexion con el modulo se carga el layout principal (system_1_layout.xml)
- * el cual contiene ciertos botones los cuales al pulsarse envian un mensaje al modulo HC-06, y el arduino los
- * interpreta como una orden, cambiando el estado de ciertos pines del mismo.
+ * Esta Actividad se encarga de establecer una comunicacion con un modulo bluetooth HC-06, el cual
+ * estara conectado a un Arduino Leonardo. El sistema que este representa es un coche electronico
+ * montado sobre una placa arduino como unidad de control.
  *
- * En caso de haber un fallo durante el proceso de conexion con el modulo HC-06 se cargara un layout de error determinado
- * y se presentara un pequeño mensaje al usuario de fallo de inicio de esta conexion.
+ * Cuando esta se inicia, se establece una comunicacion con el vehiculo, con el fin de poder
+ * mandarle comandos para controlarlo de forma remota.
+ *
+ * En caso de haber un fallo durante el proceso de conexion con el modulo HC-06 se presentara un pequeño
+ * mensaje al usuario de fallo de inicio de esta conexion.
  *
  * @author Juan Jose Ropero Cerro (i82rocej)
  * @version 1.0
  */
 public class System1Activity extends AppCompatActivity {
     //Variables para poder usar bluetooth
-    BluetoothAdapter bluetoothAdapter;//Variable para identificar el modulo bluetooth del dispositivo android
     BluetoothSocket blueSocket;//Socket para la comunicacion por bluetooth
-    BluetoothDevice blueDevice;//Variable para el dispisitivo bluetooth
-    ConnectedThread btt = null;//Hilo de comunicaciones de bluetooth
+    ConnectedThread coms = null;//Hilo de comunicaciones de bluetooth
     //Constantes necesarias
-    private static final UUID blueUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
-    public static final String blueMac = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
+    private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
+    public static final String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
     //Codigos de identificacion de permisos de bluetooth
     //private static final int BLUETOOTH_CONNECT_CODE = 100;
     //Botones usados en las vistas
@@ -56,9 +56,7 @@ public class System1Activity extends AppCompatActivity {
         setContentView(R.layout.system_1_layout);
 
         // Adaptador bluetooth
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-
+        //bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
 
         //////////////////////////////////
@@ -198,18 +196,24 @@ public class System1Activity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, 0);
             }
         }
+
         //Tras tener los permissos necesarios iniciamos la conexion con el modulo
         try {
-            //Establecemos la UUID y la direccion MAC de nuestro modulo
-            blueDevice = bluetoothAdapter.getRemoteDevice(blueMac);
-            blueSocket = blueDevice.createRfcommSocketToServiceRecord(blueUUID);
+            //Accededemos al Bluetooth del nuestro dispositivo
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+            //Cargamos el dispositivo remoto al que deseamos conectarnos con bMAC
+            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(bMAC);
+
+            //Arbimos el puerto de comunicacion necesario con bUUID
+            blueSocket = device.createRfcommSocketToServiceRecord(bUUID);
 
             //Establecemos conexion por el puerto de bluetooth
             blueSocket.connect();
 
             //Creamos e iniciamos el therad usado para la comunicacion bluetooth
-            btt=new ConnectedThread(blueSocket);
-            btt.start();
+            coms=new ConnectedThread(blueSocket);
+            coms.start();
             //Retornamos exito de comunicacion
             return true;
         }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
@@ -242,9 +246,9 @@ public class System1Activity extends AppCompatActivity {
     private void sendMessage(String data){
 
         //Verificamos que aun estamos conectados al modulo bluetooth
-        if (blueSocket.isConnected() && btt != null) {
+        if (blueSocket.isConnected() && coms != null) {
             //Enviamos el comando de funcionamiento al modulo bluetooth
-            btt.write(data.getBytes());
+            coms.write(data.getBytes());
             //Actualizamos la UI para reflejar que fuel el ultimo que se pulso
             updateUI(data);
         } else {
