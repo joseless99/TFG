@@ -51,9 +51,22 @@ public class System1Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.blank_layout);
+
+        //Carga del Layout de la actividad
+        setContentView(R.layout.system_1_layout);
+
         // Adaptador bluetooth
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+
+
+
+        //////////////////////////////////
+        // Bloque de codigo a borrar
+        // Desactivado ya que las pruebas necesarias se hacen antes en MainActivity
+        //////////////////////////////
+
+    /*
         //Verificamos que el dispositivo bluetooth es capaz de usar bluetooth
         if (bluetoothAdapter == null) {
             setContentView(R.layout.bt_non_existent_layout);
@@ -70,75 +83,90 @@ public class System1Activity extends AppCompatActivity {
                         restartApp();
                     }
                 });
-
-
             } else {//Si el bluetooth esta activado
-                //MEnsaje informativo para el usuario
-                Toast.makeText(System1Activity.this,"Iniciando Comunicacion.Espere un poco",Toast.LENGTH_SHORT).show();
-                //Iniciamos la conexion con el dispositivo bluetooth
-                if (iniciarComBlue()) {//Conexion exitosa
-                    //Pequelo mensaje de confirmacion de conexion
-                    Toast.makeText(System1Activity.this, "Conexion establecida con el modulo bluetooth", Toast.LENGTH_SHORT) .show();
 
-                    //Cargamos la vista principal de la app
-                    setContentView(R.layout.system_1_layout);
+        */
+           /////////////////////////
+           ///FIn de Bloque de codigo a Borrar
+           /////////////////////////
 
-                    //Sincronizamos los botones del layout con los definidos en System1Activity
-                    bF = findViewById(R.id.bForward);
-                    bB = findViewById(R.id.bBack);
-                    bR = findViewById(R.id.bRight);
-                    bL = findViewById(R.id.bLeft);
-                    bS = findViewById(R.id.bStop);
-                    //Añadimos funcionalidades para cada boton del layout, para cuando se pulsen
 
-                    //Boton de accion Avance(Forward) del vehiculo arduino
-                    bF.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            sendMessage("F");
-                        }
-                    });
 
-                    //Boton de accion Retroceso(Backwards) del vehiculo arduino
-                    bB.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            sendMessage("B");
-                        }
-                    });
 
-                    //Boton de accion giro Derecha(Right) del vehiculo arduino
-                    bR.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            sendMessage("R");
-                        }
-                    });
+        //MEnsaje informativo para el usuario
+        Toast.makeText(System1Activity.this,"Iniciando Comunicacion.Espere un poco",Toast.LENGTH_SHORT).show();
 
-                    //Boton de accion giro Izquierda(Left) del vehiculo arduino
-                    bL.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            sendMessage("L");
-                        }
-                    });
+        //Iniciamos la conexion con el dispositivo bluetooth
+        if (iniciarComBlue()) {//Conexion exitosa
+            //Pequelo mensaje de confirmacion de conexion
+            Toast.makeText(System1Activity.this, "Conexion establecida con el modulo bluetooth", Toast.LENGTH_SHORT) .show();
 
-                    //Boton de accion Detenerse(Stop) del vehiculo arduino
-                    bS.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            sendMessage("S");
-                        }
-                    });
+            //Sincronizamos los botones del layout con los definidos en System1Activity
+            bF = findViewById(R.id.bForward);
+            bB = findViewById(R.id.bBack);
+            bR = findViewById(R.id.bRight);
+            bL = findViewById(R.id.bLeft);
+            bS = findViewById(R.id.bStop);
+            //Añadimos funcionalidades para cada boton del layout, para cuando se pulsen
 
-                    sendMessage("0");
-
-                }else {//Comunicacion fallida
-                    Toast.makeText(System1Activity.this, "Error de conexion con el modulo bluetooth HC-06", Toast.LENGTH_SHORT) .show();
+            //Boton de accion Avance(Forward) del vehiculo arduino
+            bF.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sendMessage("F");
                 }
-            }
+            });
+
+            //Boton de accion Retroceso(Backwards) del vehiculo arduino
+            bB.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sendMessage("B");
+                }
+            });
+
+            //Boton de accion giro Derecha(Right) del vehiculo arduino
+            bR.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sendMessage("R");
+                }
+            });
+
+            //Boton de accion giro Izquierda(Left) del vehiculo arduino
+            bL.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sendMessage("L");
+                }
+            });
+
+            //Boton de accion Detenerse(Stop) del vehiculo arduino
+            bS.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sendMessage("S");
+                }
+            });
+
+            sendMessage("0");
+
+        }else {//Comunicacion fallida
+            Toast.makeText(System1Activity.this, "Error de conexion con el modulo bluetooth HC-06", Toast.LENGTH_SHORT) .show();
         }
     }
+
+
+
+
+    ///////////////////
+    /// Finales de linea del bloque de codigo comentado. Pendiente de borrar
+    //////////////////
+//        }
+//    }
+
+
+
 
     /**
      * Funcion encargada para iniciar la comunicacion del dispositivo con el modulo bluetooth
@@ -206,35 +234,6 @@ public class System1Activity extends AppCompatActivity {
 
     }
 
-    /**
-     * Funcion que se encarga de reinicar la aplicacion.
-     */
-    private void restartApp()  {
-        //Verificamos si tenemos los permisos necesarios para habilitar el modulo bluetooth
-        if (ActivityCompat.checkSelfPermission(System1Activity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
-            //Solicitamos los permisos al sistema
-            ActivityCompat.requestPermissions(System1Activity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},0);
-        }
-        finConexion();//Aseguramos que cerramos el socket
-        bluetoothAdapter.enable();//Activamos el bluetooth
-
-        //Detenemos la app por 0.5segundos para garantizar el correcto inicio del bluetooth del movil
-        try {
-            //Mensaje informativo para el usuario
-            Toast.makeText(System1Activity.this,"Reiniciando espere un poco",Toast.LENGTH_SHORT).show();
-            //Delay aplicado a la app
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        //Creamos el Intent necesario para reinicar la app
-        Intent a=new Intent(this, System1Activity.class);
-        //Reiniciamos la app
-        startActivity(a);
-        //Teminamos con la previa activa
-        finish();
-    }
 
     /**
      * Funcion encargada de enviar mensajes al vehiculo con el que se comunica
@@ -286,12 +285,12 @@ public class System1Activity extends AppCompatActivity {
     private void finConexion(){
         //Comprobamos si hay abierta una conexion (cuando blueSocket no es null)
         if(blueSocket!=null)
-        try {
-            //Cerramos conexion
-            blueSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            try {
+                //Cerramos conexion
+                blueSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         //Ponemos la variable blueSocket a null para garantizar que se acaba la conexion EN cualquier caso posible
         blueSocket=null;
     }
@@ -302,4 +301,41 @@ public class System1Activity extends AppCompatActivity {
         sendMessage("1");
         finConexion();
     }
+
+    //////////////////////////////////////////
+    // Funcion a Borrar.
+    // Desactivada debido a que ya no es Util
+    //////////////////////////////////////////
+    /**
+     * Funcion que se encarga de reinicar la aplicacion.
+     */
+/*
+    private void restartApp()  {
+        //Verificamos si tenemos los permisos necesarios para habilitar el modulo bluetooth
+        if (ActivityCompat.checkSelfPermission(System1Activity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
+            //Solicitamos los permisos al sistema
+            ActivityCompat.requestPermissions(System1Activity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},0);
+        }
+        finConexion();//Aseguramos que cerramos el socket
+        bluetoothAdapter.enable();//Activamos el bluetooth
+
+        //Detenemos la app por 0.5segundos para garantizar el correcto inicio del bluetooth del movil
+        try {
+            //Mensaje informativo para el usuario
+            Toast.makeText(System1Activity.this,"Reiniciando espere un poco",Toast.LENGTH_SHORT).show();
+            //Delay aplicado a la app
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //Creamos el Intent necesario para reinicar la app
+        Intent a=new Intent(this, System1Activity.class);
+        //Reiniciamos la app
+        startActivity(a);
+        //Teminamos con la previa activa
+        finish();
+    }
+*/
+
 }

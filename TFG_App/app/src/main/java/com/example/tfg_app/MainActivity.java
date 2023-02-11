@@ -2,6 +2,7 @@ package com.example.tfg_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Creamos los botones que estaran asociados al layout de esta actividad
     public Button bs1,bs2;
+    BluetoothAdapter bAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,12 +23,29 @@ public class MainActivity extends AppCompatActivity {
         bs1=findViewById(R.id.bsystem_1);
         bs2=findViewById(R.id.bsystem_2);
 
+        bAdapter=BluetoothAdapter.getDefaultAdapter();
+
+        if(bAdapter==null)
+        {
+            Toast.makeText(this,"No se ha detectado un modulo bluetooth operativo. La app en este dispositivo no funcionará",Toast.LENGTH_LONG);
+        }
+
         bs1.setOnClickListener(new View.OnClickListener() {
             @Override
+
             public void onClick(View view) {
-                startSystem1();
+                if(bAdapter.isEnabled()){
+                    startSystem1();
+                }else
+                {
+                    Toast.makeText(MainActivity.this,"El bluetooth del dispositivo esta desactivado. Actívelo antes de continuar",Toast.LENGTH_SHORT);
+
+                }
+
             }
         });
+
+
         bs2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
