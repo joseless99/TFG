@@ -9,6 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+/**
+ *  Actividad principal de la aplicacion Android desarrollada para el TFG
+ *
+ *  Se trata de un menu de acceso a distintos posibles dispositivos remotos a los que poder comunicarse
+ *  usando la aplicacion
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     //Creamos los botones que estaran asociados al layout de esta actividad
@@ -23,8 +30,10 @@ public class MainActivity extends AppCompatActivity {
         bs1=findViewById(R.id.bsystem_1);
         bs2=findViewById(R.id.bsystem_2);
 
+        //Cargamos el dispositivo bluetooth del movil
         bAdapter=BluetoothAdapter.getDefaultAdapter();
 
+        //Verificamos si este existe
         if(bAdapter==null)
         {
             Toast.makeText(this,"No se ha detectado un modulo bluetooth operativo. La app en este dispositivo no funcionará",Toast.LENGTH_LONG);
@@ -34,12 +43,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
 
             public void onClick(View view) {
-                if(bAdapter.isEnabled()){
-                    startSystem1();
-                }else
-                {
-                    Toast.makeText(MainActivity.this,"El bluetooth del dispositivo esta desactivado. Actívelo antes de continuar",Toast.LENGTH_SHORT);
-
+                if(bAdapter!=null) {
+                    if (bAdapter.isEnabled()) {
+                        startSystem1();
+                    } else {
+                        Toast.makeText(MainActivity.this, "El bluetooth del dispositivo esta desactivado. Actívelo antes de continuar", Toast.LENGTH_SHORT);
+                    }
                 }
 
             }
@@ -49,10 +58,20 @@ public class MainActivity extends AppCompatActivity {
         bs2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this,"Este boton es de ejemplo y no hace nada por el momento", Toast.LENGTH_SHORT);
+                if(bAdapter!=null) {
+                    if (bAdapter.isEnabled()) {
+                        Toast.makeText(MainActivity.this,"Este boton es de ejemplo y no hace nada por el momento", Toast.LENGTH_SHORT);
+                    } else {
+                        Toast.makeText(MainActivity.this, "El bluetooth del dispositivo esta desactivado. Actívelo antes de continuar", Toast.LENGTH_SHORT);
+                    }
+                }
             }
         });
     }
+
+    /**
+     * Funcion que se encarga de iniciar la actividad asociada al vehiculo electronico de ejemplo
+     */
     public void startSystem1(){
         //Creamos el Intent necesario para iniciar la actividad System1Activity
         Intent a = new Intent(this,System1Activity.class);
