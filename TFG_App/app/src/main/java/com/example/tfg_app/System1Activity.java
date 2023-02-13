@@ -38,13 +38,13 @@ import java.util.UUID;
  */
 public class System1Activity extends AppCompatActivity {
     //Variables para poder usar bluetooth
-    BluetoothSocket blueSocket;//Socket para la comunicacion por bluetooth
-    ConnectedThread coms = null;//Hilo de comunicaciones de bluetooth
+    private BluetoothSocket blueSocket=null;//Socket para la comunicacion por bluetooth
+    private ConnectedThread coms = null;//Hilo de comunicaciones de bluetooth
+
     //Constantes necesarias
     private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
     public static final String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
-    //Codigos de identificacion de permisos de bluetooth
-    //private static final int BLUETOOTH_CONNECT_CODE = 100;
+
     //Botones usados en las vistas
     public Button bF, bB, bR, bL, bS;
 
@@ -54,41 +54,6 @@ public class System1Activity extends AppCompatActivity {
 
         //Carga del Layout de la actividad
         setContentView(R.layout.system_1_layout);
-
-        // Adaptador bluetooth
-        //bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-
-        //////////////////////////////////
-        // Bloque de codigo a borrar
-        // Desactivado ya que las pruebas necesarias se hacen antes en MainActivity
-        //////////////////////////////
-
-    /*
-        //Verificamos que el dispositivo bluetooth es capaz de usar bluetooth
-        if (bluetoothAdapter == null) {
-            setContentView(R.layout.bt_non_existent_layout);
-        } else {
-            //en caso de disponer de bluetooth, verificamos si esta activado o no
-            if (!bluetoothAdapter.isEnabled()) {//caso de no estar activado el bluetooth
-                setContentView(R.layout.bt_disable_layout);//Cargamos una vista de error
-                Button en = (Button) findViewById(R.id.actBlue);
-                en.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //Cambiamos el layout para evitar multiples activaciones de la accion
-                        setContentView(R.layout.blank_layout);
-                        restartApp();
-                    }
-                });
-            } else {//Si el bluetooth esta activado
-
-        */
-           /////////////////////////
-           ///FIn de Bloque de codigo a Borrar
-           /////////////////////////
-
-
 
 
         //MEnsaje informativo para el usuario
@@ -153,17 +118,6 @@ public class System1Activity extends AppCompatActivity {
             Toast.makeText(System1Activity.this, "Error de conexion con el modulo bluetooth HC-06", Toast.LENGTH_SHORT) .show();
         }
     }
-
-
-
-
-    ///////////////////
-    /// Finales de linea del bloque de codigo comentado. Pendiente de borrar
-    //////////////////
-//        }
-//    }
-
-
 
 
     /**
@@ -253,7 +207,7 @@ public class System1Activity extends AppCompatActivity {
             updateUI(data);
         } else {
             //Pequeño mensaje de error, en caso de haber un fallo de envio
-            Toast.makeText(System1Activity.this, "Message could not be sent", Toast.LENGTH_SHORT).show();
+            Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -299,47 +253,16 @@ public class System1Activity extends AppCompatActivity {
         blueSocket=null;
     }
 
+    /**
+     * Metodo que se activa cuando se cierra esta actividad. Finaliza la comunicaciones abiertos y
+     * elimina el Thread usado
+     */
     @Override
     public void onDestroy(){
         super.onDestroy();
         sendMessage("1");
+        coms.interrupt();
         finConexion();
     }
-
-    //////////////////////////////////////////
-    // Funcion a Borrar.
-    // Desactivada debido a que ya no es Util
-    //////////////////////////////////////////
-    /**
-     * Funcion que se encarga de reinicar la aplicacion.
-     */
-/*
-    private void restartApp()  {
-        //Verificamos si tenemos los permisos necesarios para habilitar el modulo bluetooth
-        if (ActivityCompat.checkSelfPermission(System1Activity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
-            //Solicitamos los permisos al sistema
-            ActivityCompat.requestPermissions(System1Activity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},0);
-        }
-        finConexion();//Aseguramos que cerramos el socket
-        bluetoothAdapter.enable();//Activamos el bluetooth
-
-        //Detenemos la app por 0.5segundos para garantizar el correcto inicio del bluetooth del movil
-        try {
-            //Mensaje informativo para el usuario
-            Toast.makeText(System1Activity.this,"Reiniciando espere un poco",Toast.LENGTH_SHORT).show();
-            //Delay aplicado a la app
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        //Creamos el Intent necesario para reinicar la app
-        Intent a=new Intent(this, System1Activity.class);
-        //Reiniciamos la app
-        startActivity(a);
-        //Teminamos con la previa activa
-        finish();
-    }
-*/
 
 }
