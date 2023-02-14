@@ -8,7 +8,6 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
@@ -18,7 +17,17 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
+
+//TODO: Incluir una seccion de UI de la actividad donde se pueda recibir datos enviados al
+// InputStream de la comunicacion bluetooth. Este principalmente recibirá la distancia del vehiculo
+// con un posible obstaculo que tenga en frente
+
+//TODO: Crear un metodo que permita obtener el mensaje que haya sido enviado a InputStream
+
+//TODO: revisar documentacion del codigo para actualizar con respecto a los combios
 
 /**
  * Actividad de ejemplo de la aplicacion Android desarrollada para el TFG
@@ -34,12 +43,15 @@ import java.util.UUID;
  * mensaje al usuario de fallo de inicio de esta conexion.
  *
  * @author Juan Jose Ropero Cerro (i82rocej)
- * @version 1.0
+ * @version 1.1
  */
 public class System1Activity extends AppCompatActivity {
     //Variables para poder usar bluetooth
-    private BluetoothSocket blueSocket=null;//Socket para la comunicacion por bluetooth
-    private ConnectedThread coms = null;//Hilo de comunicaciones de bluetooth
+    private BluetoothSocket bSocket = null;//Socket para la comunicacion por bluetooth
+    private BluetoothDevice bDevice = null;
+    private BluetoothAdapter bAdapter = null;
+    private OutputStream bOutput=null;
+    private InputStream bInput=null;
 
     //Constantes necesarias
     private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
@@ -57,68 +69,119 @@ public class System1Activity extends AppCompatActivity {
 
 
         //MEnsaje informativo para el usuario
-        Toast.makeText(System1Activity.this,"Iniciando Comunicacion.Espere un poco",Toast.LENGTH_SHORT).show();
+        Toast.makeText(System1Activity.this, "Iniciando Comunicacion.Espere un poco", Toast.LENGTH_SHORT).show();
 
-        //Iniciamos la conexion con el dispositivo bluetooth
-        if (iniciarComBlue()) {//Conexion exitosa
-            //Pequelo mensaje de confirmacion de conexion
-            Toast.makeText(System1Activity.this, "Conexion establecida con el modulo bluetooth", Toast.LENGTH_SHORT) .show();
+        //Tratamos de iniciar la comunicacion con el modulo bluetooth esclavo, asignado a
+        //esta actividad. Este cargará de forma paralela a la carga de la interfaz principal
 
-            //Sincronizamos los botones del layout con los definidos en System1Activity
-            bF = findViewById(R.id.bForward);
-            bB = findViewById(R.id.bBack);
-            bR = findViewById(R.id.bRight);
-            bL = findViewById(R.id.bLeft);
-            bS = findViewById(R.id.bStop);
-            //Añadimos funcionalidades para cada boton del layout, para cuando se pulsen
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                inicioConexionB();
+            }
+        }).start();
 
-            //Boton de accion Avance(Forward) del vehiculo arduino
-            bF.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    sendMessage("F");
-                }
-            });
+        //TODO: Enlazar un icono que representa la conexion bluetooth
+        //Sincronizamos los botones del layout con los definidos en System1Activity
+        bF = findViewById(R.id.bForward);
+        bB = findViewById(R.id.bBack);
+        bR = findViewById(R.id.bRight);
+        bL = findViewById(R.id.bLeft);
+        bS = findViewById(R.id.bStop);
 
-            //Boton de accion Retroceso(Backwards) del vehiculo arduino
-            bB.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    sendMessage("B");
-                }
-            });
+        //Añadimos funcionalidades para cada boton del layout, para cuando se pulsen
 
-            //Boton de accion giro Derecha(Right) del vehiculo arduino
-            bR.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    sendMessage("R");
-                }
-            });
+        //Boton de accion Avance(Forward) del vehiculo arduino
+        bF.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enviarComando("F");
+            }
+        });
 
-            //Boton de accion giro Izquierda(Left) del vehiculo arduino
-            bL.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    sendMessage("L");
-                }
-            });
+        //Boton de accion Retroceso(Backwards) del vehiculo arduino
+        bB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enviarComando("B");
+            }
+        });
 
-            //Boton de accion Detenerse(Stop) del vehiculo arduino
-            bS.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    sendMessage("S");
-                }
-            });
+        //Boton de accion giro Derecha(Right) del vehiculo arduino
+        bR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enviarComando("R");
+            }
+        });
 
-            sendMessage("0");
+        //Boton de accion giro Izquierda(Left) del vehiculo arduino
+        bL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enviarComando("L");
+            }
+        });
 
-        }else {//Comunicacion fallida
-            Toast.makeText(System1Activity.this, "Error de conexion con el modulo bluetooth HC-06", Toast.LENGTH_SHORT) .show();
+        //Boton de accion Detenerse(Stop) del vehiculo arduino
+        bS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enviarComando("S");
+            }
+        });
+
+        //TODO: Añadir aqui o arriba que el color del icono bluetooth empieza en gris para
+        // indicar que se esta intentando conectar
+
+        //TODO (Maybe): Añadirle funcionalidad al icono Bluetooth para que al pulsarlo se
+        // reintente la conexion con el modulo bluetooth esclavo en caso de haber habido un error al comienzo
+
+    }
+
+    public void setBluetoothAdapter(BluetoothAdapter adapter) {
+        if (adapter == null) {
+            bAdapter = BluetoothAdapter.getDefaultAdapter();
+        } else {
+            this.bAdapter = adapter;
         }
     }
 
+    public void setBluetoothDevice(BluetoothDevice device) {
+            this.bDevice = device;
+    }
+
+
+    public void setBluetoothSocket(BluetoothSocket socket) {
+        this.bSocket=socket;
+    }
+
+    public void setOutputStream(OutputStream stream) {
+        this.bOutput=stream;
+    }
+    public void setInputStream(InputStream stream){
+        this.bInput=stream;
+    }
+
+
+    public BluetoothAdapter getBluetoothAdapter(){
+        return this.bAdapter;
+    }
+
+    public BluetoothSocket getBluetoothSocket(){
+        return this.bSocket;
+    }
+
+    public BluetoothDevice getBluetoothDevice(){
+        return this.bDevice;
+    }
+
+    public OutputStream getOutputStream() {
+        return this.bOutput;
+    }
+    public InputStream getInputStream(){
+        return this.bInput;
+    }
 
     /**
      * Funcion encargada para iniciar la comunicacion del dispositivo con el modulo bluetooth
@@ -129,10 +192,8 @@ public class System1Activity extends AppCompatActivity {
      *
      * NOTA: Para que esta se lleve acabo correctamente antes hay que haber pareado el modulo con el movil a usar
      *
-     * @return True si se ha llevado a cabo con exito la conexion con el modulo HC-06;
-     * False si la conexion con el modulo HC-06 falla por alguna razon.
      */
-    public boolean iniciarComBlue(){
+    public void inicioConexionB(){
 
         //Verificamos que tengamos los permisos necesarios autorizado
         //Para dispositivos con API>=31(Android 12 o superior) solicitamos permisos BLUETOOTH_CONNECT
@@ -154,24 +215,30 @@ public class System1Activity extends AppCompatActivity {
         //Tras tener los permissos necesarios iniciamos la conexion con el modulo
         try {
             //Accededemos al Bluetooth del nuestro dispositivo
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            setBluetoothAdapter(BluetoothAdapter.getDefaultAdapter());
 
             //Cargamos el dispositivo remoto al que deseamos conectarnos con bMAC
-            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(bMAC);
+            setBluetoothDevice(getBluetoothAdapter().getRemoteDevice(bMAC));
 
-            //Arbimos el puerto de comunicacion necesario con bUUID
-            blueSocket = device.createRfcommSocketToServiceRecord(bUUID);
+            //Establecemos el puerto de comunicacion necesario con bUUID
+            setBluetoothSocket(getBluetoothDevice().createRfcommSocketToServiceRecord(bUUID));
 
-            //Establecemos conexion por el puerto de bluetooth
-            blueSocket.connect();
+            //Abrimos la conexion por el puerto con el dispositivo esclavo de bluetooth
+            bSocket.connect();
 
-            //Creamos e iniciamos el therad usado para la comunicacion bluetooth
-            coms=new ConnectedThread(blueSocket);
-            coms.start();
+            //Enlazamos la via de conexion de datos entre los 2 dispositivos
+            setOutputStream(getBluetoothSocket().getOutputStream());
+            setInputStream(getBluetoothSocket().getInputStream());
+
+            //TODO: Cambiar el color del icono a verde para representar que se ha hecho la conexion correcta
+
+            //TODO: Enviar un mensaje al modulo Bluetooth esclavo para iniciar el sistema arduino
+            enviarComando("0");
+
             //Retornamos exito de comunicacion
-            return true;
         }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
-            return false;
+            //TODO: Cambiar el color del icono a rojo para representar que se ha hecho la conexion correcta
+            e.printStackTrace();
         }
     }
 
@@ -179,11 +246,12 @@ public class System1Activity extends AppCompatActivity {
      * Funcion encargada de resetear los colores de los botones del system_1_layout.xml al color inicial definicdo
      */
     private void resetColor(){
-        //Variable que almacena el color defaul de los botones
-        //Cambiar su valor en caso de cambiar el color default de los botones
+        //Variable que almacena el color por defecto de los botones decidido
+        //Cambiar su valor en caso de cambiar el color por defecto de los botones
         int defaultButtonColor= Color.parseColor("#0000FF");
 
-        //Cambio del color de cada boton al definido previamente
+        //Cambio del color de cada boton al valor por defecto.
+        //Aqui no se incluye el icono que refleja el estado de conexion bluetooth
         bF.setBackgroundColor(defaultButtonColor);
         bB.setBackgroundColor(defaultButtonColor);
         bS.setBackgroundColor(defaultButtonColor);
@@ -197,15 +265,26 @@ public class System1Activity extends AppCompatActivity {
      * Funcion encargada de enviar mensajes al vehiculo con el que se comunica
      * @param data: Informacion a enviar al receptor
      */
-    private void sendMessage(String data){
+    private void enviarComando(String data){
 
         //Verificamos que aun estamos conectados al modulo bluetooth
-        if (blueSocket.isConnected() && coms != null) {
+        if (getBluetoothSocket().isConnected()) {
+
+            //Conevrtimos el comando a tipo byte[]
+            byte[] comando=data.getBytes();
+
             //Enviamos el comando de funcionamiento al modulo bluetooth
-            coms.write(data.getBytes());
+            try {
+                this.bOutput.write(comando);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             //Actualizamos la UI para reflejar que fuel el ultimo que se pulso
             updateUI(data);
+
         } else {
+
             //Pequeño mensaje de error, en caso de haber un fallo de envio
             Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado", Toast.LENGTH_SHORT).show();
         }
@@ -238,19 +317,21 @@ public class System1Activity extends AppCompatActivity {
     }
 
     /**
-     * Funcion encargada de cerrar la conexion con el modulo bluetooth receptor
+     * Funcion encargada de cerrar la conexion Bluetooth con el dispositivo remoto
      */
-    private void finConexion(){
+    private void finConexionB(){
         //Comprobamos si hay abierta una conexion (cuando blueSocket no es null)
-        if(blueSocket!=null)
+        if(this.bSocket.isConnected())
             try {
                 //Cerramos conexion
-                blueSocket.close();
+                bSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        //Ponemos la variable blueSocket a null para garantizar que se acaba la conexion EN cualquier caso posible
-        blueSocket=null;
+        //Ponemos bSocket, bInput y bOutput a null para acabar con el cerrado de conexion
+        this.bSocket=null;
+        this.bInput=null;
+        this.bOutput=null;
     }
 
     /**
@@ -260,9 +341,15 @@ public class System1Activity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        sendMessage("1");
-        coms.interrupt();
-        finConexion();
-    }
 
+        //Solo cerraremos la conexion si sabemos que se ha llegado a establecer esta con el arduino
+        if(getBluetoothSocket()!=null) {
+
+            //Enviamos un comando al arduino para que comprenda que se ha acabado la conexion
+            enviarComando("1");
+
+            //Cerramos la conexion con el arduino
+            finConexionB();
+        }
+    }
 }
