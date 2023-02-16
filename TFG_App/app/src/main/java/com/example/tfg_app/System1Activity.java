@@ -243,7 +243,7 @@ public class System1Activity extends AppCompatActivity {
             bC.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(System1Activity.this,"La conexion esta activa y funcionando",Toast.LENGTH_SHORT);
+                    Toast.makeText(System1Activity.this,"La conexion esta activa y funcionando",Toast.LENGTH_SHORT).show();
                 }
             });
         }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
@@ -254,7 +254,17 @@ public class System1Activity extends AppCompatActivity {
             bC.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    inicioConexionB();
+                    //MEnsaje de informacion para el usuario
+                    Toast.makeText(System1Activity.this,"Reintentando conexion",Toast.LENGTH_SHORT).show();
+
+                    //Indicamos que al reintentar la conexion lo haga en un nuevo Thread,
+                    //en caso de que esta vuelva a fallar
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            inicioConexionB();
+                        }
+                    }).start();
                 }
             });
             e.printStackTrace();
