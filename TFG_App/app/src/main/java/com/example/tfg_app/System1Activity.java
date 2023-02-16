@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -59,6 +60,7 @@ public class System1Activity extends AppCompatActivity {
 
     //Botones usados en las vistas
     public Button bF, bB, bR, bL, bS;
+    public ImageButton bC;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,16 @@ public class System1Activity extends AppCompatActivity {
         //MEnsaje informativo para el usuario
         Toast.makeText(System1Activity.this, "Iniciando Comunicacion.Espere un poco", Toast.LENGTH_SHORT).show();
 
+
+        //TODO: Enlazar un icono que representa la conexion bluetooth
+        //Sincronizamos los botones del layout con los definidos en System1Activity
+        bF = findViewById(R.id.bForward);
+        bB = findViewById(R.id.bBack);
+        bR = findViewById(R.id.bRight);
+        bL = findViewById(R.id.bLeft);
+        bS = findViewById(R.id.bStop);
+        bC=findViewById(R.id.bConexion);
+
         //Tratamos de iniciar la comunicacion con el modulo bluetooth esclavo, asignado a
         //esta actividad. Este cargará de forma paralela a la carga de la interfaz principal
 
@@ -81,16 +93,8 @@ public class System1Activity extends AppCompatActivity {
             }
         }).start();
 
-        //TODO: Enlazar un icono que representa la conexion bluetooth
-        //Sincronizamos los botones del layout con los definidos en System1Activity
-        bF = findViewById(R.id.bForward);
-        bB = findViewById(R.id.bBack);
-        bR = findViewById(R.id.bRight);
-        bL = findViewById(R.id.bLeft);
-        bS = findViewById(R.id.bStop);
 
         //Añadimos funcionalidades para cada boton del layout, para cuando se pulsen
-
         //Boton de accion Avance(Forward) del vehiculo arduino
         bF.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,8 +135,6 @@ public class System1Activity extends AppCompatActivity {
             }
         });
 
-        //TODO: Añadir aqui o arriba que el color del icono bluetooth empieza en gris para
-        // indicar que se esta intentando conectar
 
         //TODO (Maybe): Añadirle funcionalidad al icono Bluetooth para que al pulsarlo se
         // reintente la conexion con el modulo bluetooth esclavo en caso de haber habido un error al comienzo
@@ -230,14 +232,31 @@ public class System1Activity extends AppCompatActivity {
             setOutputStream(getBluetoothSocket().getOutputStream());
             setInputStream(getBluetoothSocket().getInputStream());
 
-            //TODO: Cambiar el color del icono a verde para representar que se ha hecho la conexion correcta
+            //Cambaimos el colo del Boton a verde para relfejar que el dispositivo se ha conectado
+            //correctamente con el arduino receptor
+            bC.setBackgroundColor(Color.GREEN);
 
-            //TODO: Enviar un mensaje al modulo Bluetooth esclavo para iniciar el sistema arduino
+            //Enviamos mensaje al arduino para que este empieze a funcionar
             enviarComando("0");
 
-            //Retornamos exito de comunicacion
+            //Funcionalidad añadida para indicar al usuario que la conexion esta activa
+            bC.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(System1Activity.this,"La conexion esta activa y funcionando",Toast.LENGTH_SHORT);
+                }
+            });
         }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
             //TODO: Cambiar el color del icono a rojo para representar que se ha hecho la conexion correcta
+            bC.setBackgroundColor(Color.RED);
+
+            //Funcionalidad de reintento de conexion con el modulo bluetooth en caso de fallos
+            bC.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    inicioConexionB();
+                }
+            });
             e.printStackTrace();
         }
     }
