@@ -74,7 +74,6 @@ public class System1Activity extends AppCompatActivity {
         Toast.makeText(System1Activity.this, "Iniciando Comunicacion.Espere un poco", Toast.LENGTH_SHORT).show();
 
 
-        //TODO: Enlazar un icono que representa la conexion bluetooth
         //Sincronizamos los botones del layout con los definidos en System1Activity
         bF = findViewById(R.id.bForward);
         bB = findViewById(R.id.bBack);
@@ -134,10 +133,6 @@ public class System1Activity extends AppCompatActivity {
                 enviarComando("S");
             }
         });
-
-
-        //TODO (Maybe): Añadirle funcionalidad al icono Bluetooth para que al pulsarlo se
-        // reintente la conexion con el modulo bluetooth esclavo en caso de haber habido un error al comienzo
 
     }
 
@@ -247,8 +242,11 @@ public class System1Activity extends AppCompatActivity {
                 }
             });
         }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
-            //TODO: Cambiar el color del icono a rojo para representar que se ha hecho la conexion correcta
+
             bC.setBackgroundColor(Color.RED);
+
+            //MEnsaje de informacion para el usuario
+            Toast.makeText(System1Activity.this,"Error de conexion",Toast.LENGTH_SHORT).show();
 
             //Funcionalidad de reintento de conexion con el modulo bluetooth en caso de fallos
             bC.setOnClickListener(new View.OnClickListener() {
