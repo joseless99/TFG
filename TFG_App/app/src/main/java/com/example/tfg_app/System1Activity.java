@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -53,13 +54,14 @@ public class System1Activity extends AppCompatActivity {
     private BluetoothAdapter bAdapter = null;
     private OutputStream bOutput=null;
     private InputStream bInput=null;
-
+    private String state="Off";
     //Constantes necesarias
     private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
     public static final String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
 
     //Botones usados en las vistas
     public Button bF, bB, bR, bL, bS;
+    public TextView txt;
     public ImageButton bC;
 
     @Override
@@ -74,13 +76,14 @@ public class System1Activity extends AppCompatActivity {
         Toast.makeText(System1Activity.this, "Iniciando Comunicacion.Espere un poco", Toast.LENGTH_SHORT).show();
 
 
-        //Sincronizamos los botones del layout con los definidos en System1Activity
+        //Sincronizamos los elementos del layout con los definidos en System1Activity
         bF = findViewById(R.id.bForward);
         bB = findViewById(R.id.bBack);
         bR = findViewById(R.id.bRight);
         bL = findViewById(R.id.bLeft);
         bS = findViewById(R.id.bStop);
         bC=findViewById(R.id.bConexion);
+        txt=findViewById(R.id.data);
 
         //Tratamos de iniciar la comunicacion con el modulo bluetooth esclavo, asignado a
         //esta actividad. Este cargará de forma paralela a la carga de la interfaz principal
@@ -148,7 +151,6 @@ public class System1Activity extends AppCompatActivity {
             this.bDevice = device;
     }
 
-
     public void setBluetoothSocket(BluetoothSocket socket) {
         this.bSocket=socket;
     }
@@ -159,7 +161,6 @@ public class System1Activity extends AppCompatActivity {
     public void setInputStream(InputStream stream){
         this.bInput=stream;
     }
-
 
     public BluetoothAdapter getBluetoothAdapter(){
         return this.bAdapter;
@@ -233,6 +234,7 @@ public class System1Activity extends AppCompatActivity {
 
             //Enviamos mensaje al arduino para que este empieze a funcionar
             enviarComando("0");
+            state="on";
 
             //Funcionalidad añadida para indicar al usuario que la conexion esta activa
             bC.setOnClickListener(new View.OnClickListener() {
@@ -241,6 +243,24 @@ public class System1Activity extends AppCompatActivity {
                     Toast.makeText(System1Activity.this,"La conexion esta activa y funcionando",Toast.LENGTH_SHORT).show();
                 }
             });
+
+            //TODO: NO es la mejor forma de implementar la actualizacion de TextView, pero por el
+            // momento no se me ocurre nada mejor. Buscar como hacerlo o con un handler o un TextWatcher
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(state=="on"){
+                        try {
+                            txt.setText(leerdatos());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+
+
         }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
 
             bC.setBackgroundColor(Color.RED);
@@ -317,6 +337,13 @@ public class System1Activity extends AppCompatActivity {
         }
     }
 
+
+    public String leerdatos() throws IOException {
+        byte [] buffer=new byte[256];
+        getInputStream().read(buffer);
+
+        return new String(buffer);
+    }
     /**
      * Funcion que actualiza los colores de los botones en funcion de aquel que se haya pulsado.
      *
@@ -347,6 +374,7 @@ public class System1Activity extends AppCompatActivity {
      * Funcion encargada de cerrar la conexion Bluetooth con el dispositivo remoto
      */
     private void finConexionB(){
+        state="off";
         //Comprobamos si hay abierta una conexion (cuando blueSocket no es null)
         if(this.bSocket.isConnected())
             try {
