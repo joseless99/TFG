@@ -12,15 +12,20 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 //TODO: Incluir una seccion de UI de la actividad donde se pueda recibir datos enviados al
@@ -244,16 +249,13 @@ public class System1Activity extends AppCompatActivity {
                 }
             });
 
-            //TODO: NO es la mejor forma de implementar la actualizacion de TextView, pero por el
-            // momento no se me ocurre nada mejor. Buscar como hacerlo o con un handler o un TextWatcher
-
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while(state=="on"){
                         try {
                             txt.setText(leerdatos());
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -338,11 +340,10 @@ public class System1Activity extends AppCompatActivity {
     }
 
 
-    public String leerdatos() throws IOException {
-        byte [] buffer=new byte[256];
-        getInputStream().read(buffer);
-
-        return new String(buffer);
+    public String leerdatos() throws IOException, InterruptedException {
+        BufferedReader r = new BufferedReader(new InputStreamReader(getInputStream()));
+        String data=r.readLine();
+        return data;
     }
     /**
      * Funcion que actualiza los colores de los botones en funcion de aquel que se haya pulsado.
@@ -402,7 +403,12 @@ public class System1Activity extends AppCompatActivity {
 
             //Enviamos un comando al arduino para que comprenda que se ha acabado la conexion
             enviarComando("1");
-
+            try {
+                getOutputStream().close();
+                getInputStream().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             //Cerramos la conexion con el arduino
             finConexionB();
         }
