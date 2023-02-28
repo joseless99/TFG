@@ -1,5 +1,5 @@
 char state='1';
-int i=200;
+int i=0;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -19,7 +19,7 @@ void loop() {
 
     if(state=='0'){
  
-      Serial1.print(i);
+      Serial1.println(i);
       Serial.print("Conectado\n");
       i++;
     }else
@@ -30,5 +30,5 @@ void loop() {
       Serial1.read();
     }
   }
-    delay(2500);
+    delay(500);
 }
