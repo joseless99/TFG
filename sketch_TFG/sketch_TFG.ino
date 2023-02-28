@@ -78,15 +78,9 @@ void loop() {
             activo=false;//Impedimos que el sistema siga funcionando
             Serial.print("Desactivado\n");//Mensaje de prueba en el arduino. Borrar en la version final
           }       
-      }else if(uSensor()<=5.0){
-        frenado();
-        retroceso();
-        delay(1000);
-        frenado();
-        giroDerecha();
-        delay(1000);
-        frenado();
       }
+      //Enviamos al dispositivo maestro la distancia del vehiculo con un obstaculo frontal
+      Serial1.println(uSensor());
   }else{//En caso de que la comunicacion este desactivada verificamos si se ha recibido un mensaje de haber iniciado comunicaciones
     if(Serial1.available()>0){//Verificamos si se han enviado datos de inicio
         if(Serial1.read()=='0'){//Si se recibe el comando correcto
