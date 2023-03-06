@@ -1,4 +1,4 @@
-char state='0';
+char state=' ';
 int i=0;
 char data;
 void setup() {
@@ -10,14 +10,14 @@ void loop() {
   if(Serial1.available()>0&&state=='0'){
     state=Serial1.read();
   }
-  if(state=='1'){
+  if(state=='0'){
     if(Serial1.available()>0){
       data=Serial1.read();
       Serial.print("Instruccion recibida: ");
       Serial.write(data);
       Serial.println();
-      if(data=='0'){
-        state='0';
+      if(data=='1'){
+        state='1';
       }
     }
     Serial.print("Informacion enviada: ");

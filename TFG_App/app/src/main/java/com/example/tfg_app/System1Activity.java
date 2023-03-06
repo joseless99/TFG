@@ -237,9 +237,10 @@ public class System1Activity extends AppCompatActivity {
             //correctamente con el arduino receptor
             bC.setBackgroundColor(Color.GREEN);
 
-            //Enviamos mensaje al arduino para que este empieze a funcionar
+            //Enviamos mensaje al arduino para que este empieze a funcionar y actualizamos la variable de estado de conexion a On
             enviarComando("0");
             state="On";
+
             //Funcionalidad añadida para indicar al usuario que la conexion esta activa
             bC.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -261,10 +262,11 @@ public class System1Activity extends AppCompatActivity {
                 }
             }).start();
 
-
         }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
 
+            //Actualizamos el color del Boton y la variable de estado de control
             bC.setBackgroundColor(Color.RED);
+            state="Off";
 
             //Funcionalidad de reintento de conexion con el modulo bluetooth en caso de fallos
             bC.setOnClickListener(new View.OnClickListener() {
@@ -284,13 +286,6 @@ public class System1Activity extends AppCompatActivity {
                 }
             });
         }
-
-//        if(!bSocket.isConnected()){
-//            //MEnsaje de informacion para el usuario
-//            Toast.makeText(System1Activity.,"Error de conexion",Toast.LENGTH_SHORT).show();
-//
-//        }
-
     }
 
     /**
@@ -339,7 +334,6 @@ public class System1Activity extends AppCompatActivity {
             Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se pueden enviar mensajes", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     public String leerdatos() throws IOException {
 
@@ -402,7 +396,7 @@ public class System1Activity extends AppCompatActivity {
         if(getBluetoothSocket().isConnected()) {
             state="Off";
             //Enviamos un comando al arduino para que comprenda que se ha acabado la conexion
-            enviarComando("O");
+            enviarComando("1");
             try {
                 getOutputStream().close();
                 getInputStream().close();
