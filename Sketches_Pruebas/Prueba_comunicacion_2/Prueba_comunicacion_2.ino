@@ -1,4 +1,4 @@
-char state='1';
+char state='0';
 int i=0;
 void setup() {
   // put your setup code here, to run once:
@@ -17,7 +17,7 @@ void loop() {
       state=Serial1.read();
     }
 
-    if(state=='0'){
+    if(state=='1'){
  
       Serial1.println(i);
       Serial.print("Conectado\n");
