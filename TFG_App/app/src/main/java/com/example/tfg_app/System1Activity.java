@@ -59,7 +59,7 @@ public class System1Activity extends AppCompatActivity {
     private BluetoothAdapter bAdapter = null;
     private OutputStream bOutput=null;
     private InputStream bInput=null;
-    private String state="Off";
+    private String state="Off";//Variable para controlar el InputStream del Bluetooth
     //Constantes necesarias
     private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
     public static final String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
@@ -239,8 +239,7 @@ public class System1Activity extends AppCompatActivity {
 
             //Enviamos mensaje al arduino para que este empieze a funcionar
             enviarComando("0");
-            state="on";
-
+            state="On";
             //Funcionalidad añadida para indicar al usuario que la conexion esta activa
             bC.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -252,11 +251,11 @@ public class System1Activity extends AppCompatActivity {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while(state=="on"){
+                    while(state=="On"){
                         try {
                             txt.setText(leerdatos());
                         } catch (Exception e) {
-                            e.printStackTrace();
+
                         }
                     }
                 }
@@ -266,9 +265,6 @@ public class System1Activity extends AppCompatActivity {
         }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
 
             bC.setBackgroundColor(Color.RED);
-
-            //MEnsaje de informacion para el usuario
-            Toast.makeText(System1Activity.this,"Error de conexion",Toast.LENGTH_SHORT).show();
 
             //Funcionalidad de reintento de conexion con el modulo bluetooth en caso de fallos
             bC.setOnClickListener(new View.OnClickListener() {
@@ -287,8 +283,14 @@ public class System1Activity extends AppCompatActivity {
                     }).start();
                 }
             });
-            e.printStackTrace();
         }
+
+//        if(!bSocket.isConnected()){
+//            //MEnsaje de informacion para el usuario
+//            Toast.makeText(System1Activity.,"Error de conexion",Toast.LENGTH_SHORT).show();
+//
+//        }
+
     }
 
     /**
@@ -326,21 +328,21 @@ public class System1Activity extends AppCompatActivity {
             try {
                 this.bOutput.write(comando);
             } catch (IOException e) {
-                e.printStackTrace();
+                Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado", Toast.LENGTH_SHORT).show();
             }
 
             //Actualizamos la UI para reflejar que fuel el ultimo que se pulso
             updateUI(data);
 
         } else {
-
             //Pequeño mensaje de error, en caso de haber un fallo de envio
-            Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se pueden enviar mensajes", Toast.LENGTH_SHORT).show();
         }
     }
 
 
-    public String leerdatos() throws IOException, InterruptedException {
+    public String leerdatos() throws IOException {
+
         BufferedReader r = new BufferedReader(new InputStreamReader(getInputStream()));
         String data=r.readLine();
         return data;
@@ -375,15 +377,13 @@ public class System1Activity extends AppCompatActivity {
      * Funcion encargada de cerrar la conexion Bluetooth con el dispositivo remoto
      */
     private void finConexionB(){
-        state="off";
-        //Comprobamos si hay abierta una conexion (cuando blueSocket no es null)
-        if(this.bSocket.isConnected())
-            try {
-                //Cerramos conexion
-                bSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+        //Cerramos conexion
+        try {
+            bSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //Ponemos bSocket, bInput y bOutput a null para acabar con el cerrado de conexion
         this.bSocket=null;
         this.bInput=null;
@@ -399,10 +399,10 @@ public class System1Activity extends AppCompatActivity {
         super.onDestroy();
 
         //Solo cerraremos la conexion si sabemos que se ha llegado a establecer esta con el arduino
-        if(getBluetoothSocket()!=null) {
-
+        if(getBluetoothSocket().isConnected()) {
+            state="Off";
             //Enviamos un comando al arduino para que comprenda que se ha acabado la conexion
-            enviarComando("1");
+            enviarComando("O");
             try {
                 getOutputStream().close();
                 getInputStream().close();
