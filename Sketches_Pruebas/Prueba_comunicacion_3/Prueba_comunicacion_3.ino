@@ -7,7 +7,7 @@ void setup() {
 }
 
 void loop() {
-  if(Serial1.available()>0&&state=='0'){
+  if(Serial1.available()>0&&state!='0'){
     state=Serial1.read();
   }
   if(state=='0'){
