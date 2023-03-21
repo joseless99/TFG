@@ -7,17 +7,17 @@ import android.bluetooth.BluetoothSocket;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
-import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.ConnectException;
 import java.util.UUID;
 
 public class ConectionThread extends Thread{
@@ -28,7 +28,8 @@ public class ConectionThread extends Thread{
     private InputStream bInput=null;
     private AppCompatActivity actividadOrigen=null;
     private ImageButton bC=null;
-
+    private Boolean state=false;
+    private TextView txt=null;
     //Constantes necesarias
     private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
     public static final String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
@@ -67,6 +68,7 @@ public class ConectionThread extends Thread{
         this.bC=button;
     }
     public void setAppCompatActivity(AppCompatActivity actividad) { this.actividadOrigen=actividad; }
+    public void setTextView(TextView texto) { this.txt=texto; }
 
     public BluetoothAdapter getBluetoothAdapter(){
         return this.bAdapter;
@@ -116,8 +118,8 @@ public class ConectionThread extends Thread{
             }
         }
 
-        //Tras tener los permissos necesarios iniciamos la conexion con el modulo
         try {
+            //Tras tener los permissos necesarios iniciamos la conexion con el modulo
             //Accededemos al Bluetooth del nuestro dispositivo
             setBluetoothAdapter(BluetoothAdapter.getDefaultAdapter());
 
@@ -134,54 +136,35 @@ public class ConectionThread extends Thread{
             setOutputStream(getBluetoothSocket().getOutputStream());
             setInputStream(getBluetoothSocket().getInputStream());
 
-            //Enviamos mensaje al arduino para que este empieze a funcionar y actualizamos la variable de estado de conexion a On
-            bC.setBackgroundColor(Color.GREEN);
             enviarComando("0");
-            //state="On";
+            state=true;
 
-            //Funcionalidad añadida para indicar al usuario que la conexion esta activa
-            bC.setOnClickListener(new View.OnClickListener() {
+            //INPUTSTREAM
+            new Thread(new Runnable() {
                 @Override
-                public void onClick(View view) {
-                    Toast.makeText(getActividadOrigen(),"La conexion esta activa y funcionando",Toast.LENGTH_SHORT).show();
+                public void run() {
+                    while(state){
+                        try {
+                            txt.setText(leerdatos());
+                        } catch (Exception e) {
+
+                        }
+                    }
                 }
-            });
+            }).start();
 
-//            //INPUTSTREAM
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    while(state=="On"){
-//                        try {
-//                            txt.setText(leerdatos());
-//                        } catch (Exception e) {
-//
-//                        }
-//                    }
-//                }
-//            }).start();
-
-        }catch (Exception e){//En caso de surgir un fallo inesperado durante la comunicacion
+        }catch(IOException e){
 
             //Actualizamos el color del Boton y la variable de estado de control
             bC.setBackgroundColor(Color.RED);
-            //state="Off";
-
-           // Funcionalidad de reintento de conexion con el modulo bluetooth en caso de fallos
-            bC.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //MEnsaje de informacion para el usuario
-                    Toast.makeText(getActividadOrigen(),"Reintentando conexion",Toast.LENGTH_SHORT).show();
-
-                    //Indicamos que al reintentar la conexion lo haga en un nuevo Thread,
-                    //en caso de que esta vuelva a fallar
-//                    new Thread(new Runnable() {
-//
-//                    }).start();
-                }
-            });
+            state=false;
         }
+
+        if(bSocket.isConnected()){
+            bC.setBackgroundColor(Color.GREEN);
+        }
+
+
     }
 
     /**
@@ -210,9 +193,18 @@ public class ConectionThread extends Thread{
         }
     }
 
-    public void destroyClass(){
+
+    public String leerdatos() throws IOException {
+
+        BufferedReader r = new BufferedReader(new InputStreamReader(getInputStream()));
+        String data=r.readLine();
+        return data;
+    }
+
+
+    public void finConexion(){
         if(getBluetoothSocket().isConnected()) {
-            //state="Off";
+            state=true;
             //Enviamos un comando al arduino para que comprenda que se ha acabado la conexion
             enviarComando("1");
             try {
@@ -227,11 +219,13 @@ public class ConectionThread extends Thread{
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
             //Ponemos bSocket, bInput y bOutput a null para acabar con el cerrado de conexion
             this.bSocket=null;
+            this.bDevice=null;
+            this.bAdapter=null;
             this.bInput=null;
             this.bOutput=null;
-        }
     }
 
 }

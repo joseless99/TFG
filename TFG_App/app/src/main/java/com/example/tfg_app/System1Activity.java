@@ -2,30 +2,20 @@ package com.example.tfg_app;
 
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 //TODO: Incluir una seccion de UI de la actividad donde se pueda recibir datos enviados al
@@ -54,16 +44,7 @@ import java.util.UUID;
  */
 public class System1Activity extends AppCompatActivity {
     //Variables para poder usar bluetooth
-    private BluetoothSocket bSocket = null;//Socket para la comunicacion por bluetooth
-    private BluetoothDevice bDevice = null;
-    private BluetoothAdapter bAdapter = null;
-    private OutputStream bOutput=null;
-    private InputStream bInput=null;
     private ConectionThread C;
-    private String state="Off";//Variable para controlar el InputStream del Bluetooth
-    //Constantes necesarias
-    private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
-    public static final String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
 
     //Botones usados en las vistas
     public Button bF, bB, bR, bL, bS;
@@ -98,6 +79,7 @@ public class System1Activity extends AppCompatActivity {
         C.setAppCompatActivity(this);
         C.setBluetoothAdapter(BluetoothAdapter.getDefaultAdapter());
         C.setImageButton(bC);
+        C.setTextView(txt);
         C.start();
 
         //Añadimos funcionalidades para cada boton del layout, para cuando se pulsen
@@ -175,6 +157,26 @@ public class System1Activity extends AppCompatActivity {
                 }
             }
         });
+        bC.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if(C.getBluetoothSocket().isConnected()){
+                    Toast.makeText(System1Activity.super.getApplicationContext(), "La conexion esta activa y funcionando", Toast.LENGTH_SHORT).show();
+                }else
+                {
+                    Toast.makeText(System1Activity.super.getApplicationContext(),"Reintentando conexion",Toast.LENGTH_SHORT).show();
+                    //Como no podemos destruir el Thread lo reconstruimos desde 0
+                    C=new ConectionThread();
+                    C.setAppCompatActivity(System1Activity.this);
+                    C.setBluetoothAdapter(BluetoothAdapter.getDefaultAdapter());
+                    C.setImageButton(bC);
+                    C.setTextView(txt);
+                    C.start();
+
+                }
+            }
+        });
 
     }
 
@@ -195,13 +197,7 @@ public class System1Activity extends AppCompatActivity {
         bL.setBackgroundColor(defaultButtonColor);
 
     }
-//
-//    public String leerdatos() throws IOException {
-//
-//        BufferedReader r = new BufferedReader(new InputStreamReader(getInputStream()));
-//        String data=r.readLine();
-//        return data;
-//    }
+
     /**
      * Funcion que actualiza los colores de los botones en funcion de aquel que se haya pulsado.
      *
@@ -236,6 +232,7 @@ public class System1Activity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        C.destroyClass();
+        C.finConexion();
+        C=null;
     }
 }
