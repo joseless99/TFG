@@ -13,10 +13,9 @@ void setup() {
 
 void loop() {
   //Cuando no haya comunicacion se verifica si se ha intentado establecer, viendo si se recibe '0'
-  if(Serial1.available()>0 && Serial1.read()=='0'){
-    state=true;
-  }else{
-    state=false;
+  if(Serial1.available()>0 && state==false){
+    if(Serial1.read()=='0'){
+      state=true;}
   }
 
   //Accion si se ha establecido comunicacion establecida
