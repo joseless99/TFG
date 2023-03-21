@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class ConectionThread extends Thread{
+public class BluetoothThread extends Thread{
     private BluetoothSocket bSocket = null;//Socket para la comunicacion por bluetooth
     private BluetoothDevice bDevice = null;
     private BluetoothAdapter bAdapter = null;
@@ -34,7 +34,7 @@ public class ConectionThread extends Thread{
     private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
     public static final String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
 
-    public ConectionThread(){
+    public BluetoothThread(){
          BluetoothSocket bSocket = null;//Socket para la comunicacion por bluetooth
          BluetoothDevice bDevice = null;
          BluetoothAdapter bAdapter = null;

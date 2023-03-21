@@ -4,8 +4,6 @@ package com.example.tfg_app;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -13,10 +11,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.UUID;
 
 //TODO: Incluir una seccion de UI de la actividad donde se pueda recibir datos enviados al
 // InputStream de la comunicacion bluetooth. Este principalmente recibirá la distancia del vehiculo
@@ -43,8 +37,8 @@ import java.util.UUID;
  * @version 1.1
  */
 public class System1Activity extends AppCompatActivity {
-    //Variables para poder usar bluetooth
-    private ConectionThread C;
+    //Creamos la variable que usaremos para la comunicacion
+    private BluetoothThread blueThread =null;
 
     //Botones usados en las vistas
     public Button bF, bB, bR, bL, bS;
@@ -58,10 +52,8 @@ public class System1Activity extends AppCompatActivity {
         //Carga del Layout de la actividad
         setContentView(R.layout.system_1_layout);
 
-
         //MEnsaje informativo para el usuario
         Toast.makeText(System1Activity.this, "Iniciando Comunicacion.Espere un poco", Toast.LENGTH_SHORT).show();
-
 
         //Sincronizamos los elementos del layout con los definidos en System1Activity
         bF = findViewById(R.id.bForward);
@@ -75,19 +67,19 @@ public class System1Activity extends AppCompatActivity {
         //Tratamos de iniciar la comunicacion con el modulo bluetooth esclavo, asignado a
         //esta actividad. Este cargará de forma paralela a la carga de la interfaz principal
 
-        C=new ConectionThread();
-        C.setAppCompatActivity(this);
-        C.setBluetoothAdapter(BluetoothAdapter.getDefaultAdapter());
-        C.setImageButton(bC);
-        C.setTextView(txt);
-        C.start();
+        blueThread =new BluetoothThread();
+        blueThread.setAppCompatActivity(this);
+        blueThread.setBluetoothAdapter(BluetoothAdapter.getDefaultAdapter());
+        blueThread.setImageButton(bC);
+        blueThread.setTextView(txt);
+        blueThread.start();
 
         //Añadimos funcionalidades para cada boton del layout, para cuando se pulsen
         //Boton de accion Avance(Forward) del vehiculo arduino
         bF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int res=C.enviarComando("F");
+                int res= blueThread.enviarComando("F");
                 if(res==0){
                     updateUI("F");
                 }else if(res==1){
@@ -102,7 +94,7 @@ public class System1Activity extends AppCompatActivity {
         bB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int res=C.enviarComando("B");
+                int res= blueThread.enviarComando("B");
                 if(res==0){
                     updateUI("B");
                 }else if(res==1){
@@ -117,7 +109,7 @@ public class System1Activity extends AppCompatActivity {
         bR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int res=C.enviarComando("R");
+                int res= blueThread.enviarComando("R");
                 if(res==0){
                     updateUI("R");
                 }else if(res==1){
@@ -132,7 +124,7 @@ public class System1Activity extends AppCompatActivity {
         bL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int res=C.enviarComando("L");
+                int res= blueThread.enviarComando("L");
                 if(res==0){
                     updateUI("L");
                 }else if(res==1){
@@ -147,7 +139,7 @@ public class System1Activity extends AppCompatActivity {
         bS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int res=C.enviarComando("S");
+                int res= blueThread.enviarComando("S");
                 if(res==0){
                     updateUI("S");
                 }else if(res==1){
@@ -161,18 +153,18 @@ public class System1Activity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                if(C.getBluetoothSocket().isConnected()){
+                if(blueThread.getBluetoothSocket().isConnected()){
                     Toast.makeText(System1Activity.super.getApplicationContext(), "La conexion esta activa y funcionando", Toast.LENGTH_SHORT).show();
                 }else
                 {
                     Toast.makeText(System1Activity.super.getApplicationContext(),"Reintentando conexion",Toast.LENGTH_SHORT).show();
                     //Como no podemos destruir el Thread lo reconstruimos desde 0
-                    C=new ConectionThread();
-                    C.setAppCompatActivity(System1Activity.this);
-                    C.setBluetoothAdapter(BluetoothAdapter.getDefaultAdapter());
-                    C.setImageButton(bC);
-                    C.setTextView(txt);
-                    C.start();
+                    blueThread =new BluetoothThread();
+                    blueThread.setAppCompatActivity(System1Activity.this);
+                    blueThread.setBluetoothAdapter(BluetoothAdapter.getDefaultAdapter());
+                    blueThread.setImageButton(bC);
+                    blueThread.setTextView(txt);
+                    blueThread.start();
 
                 }
             }
@@ -232,7 +224,7 @@ public class System1Activity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        C.finConexion();
-        C=null;
+        blueThread.finConexion();
+        blueThread =null;
     }
 }
