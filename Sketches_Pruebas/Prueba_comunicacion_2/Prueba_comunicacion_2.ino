@@ -1,12 +1,15 @@
+/**
+ * Sketch de pruebas de comunicacion con el modulo bluetooth.
+ * Este sketch esta diselñado para probar el envio de datos a la aplicacion android maestra.
+ * Cuando se establece conexion este envia el valor de la variable i, la cual es un contador que aumenta de 1 en 1
+ */
+
 char state=' ';
 int i=0;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial1.begin(9600);
-  while(Serial1.available()>0){
-    Serial1.read();
-  }
 }
 
 void loop() {
@@ -25,10 +28,6 @@ void loop() {
     }else
     {
       Serial.print("No conectado\n");
-
-    while(Serial1.available()>0){
-      Serial1.read();
-    }
   }
     delay(500);
 }

@@ -1,3 +1,8 @@
+/**
+ * Sketch de pruebas de comunicacion con el modulo bluetooth.
+ * Este sketch es usado para probar el envio de datos al arduino es correcto. Solo imprimira datos si el buffer al que esta conectado el
+ * modulo bluetoth tiene informacion (pines 0 y 1 del arduino)
+ */
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
