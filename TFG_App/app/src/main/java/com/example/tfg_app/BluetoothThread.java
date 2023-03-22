@@ -20,31 +20,58 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.UUID;
 
+/**
+ * Clase creada para llevar acabo una comunicacion con un modulo bluetooth remoto
+ *
+ * Esta clase se encarga de llevar a cabo toda la comunicacion bidireccional con un modulo bluetoth remoto.
+ * Originalmente ha sido diseñada para la clase System1Activity pero puede ser tambie usada para otras
+ * actividades similares que requieran de comunicacion bidireccional.
+ *
+ * Una vez establecida la comunicacion con un modulo remoto, inmediatamente se inicia un Thread para la lectura
+ * de datos que el modulo remoto envia, siempre y cuando haya una textView asociada a la clase, y que exista en
+ * la AppCompatActivity que se le asocia a una instancia de esta.
+ */
+
 public class BluetoothThread extends Thread{
-    private BluetoothSocket bSocket = null;//Socket para la comunicacion por bluetooth
-    private BluetoothDevice bDevice = null;
-    private BluetoothAdapter bAdapter = null;
-    private OutputStream bOutput=null;
-    private InputStream bInput=null;
-    private AppCompatActivity actividadOrigen=null;
-    private ImageButton bC=null;
-    private Boolean state=false;
-    private TextView txt=null;
-    //Constantes necesarias
-    private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//UUID del Modulo bluetooth en android
+    //Parametros de la clase, necesarios para la comunicacion
+    private BluetoothSocket bSocket;//Socket para la comunicacion por bluetooth
+    private BluetoothDevice bDevice;//Variable para almacenar informacion del dispositivo a conectarnos
+    private BluetoothAdapter bAdapter;//Variable que almacena datos del modulo bluetooth de nuestro movil
+    private OutputStream bOutput;//Stream por el que enviamos datos al arduino
+    private InputStream bInput;//Stream por el que recibimos datos enviados por el arduino
+    private AppCompatActivity actividadPadre;//Actividad en la que ejecutamos esta clase. Necesario para permisos de ejecucion
+    private Boolean estadoComs;//Variable usada para controlar el estado de comunicacion con el modulo bluetooth
+    private Boolean estadoIStream;
+    //Parametros adicionales, especificos de la UI de System1Activity.
+    private ImageButton botonConexion;//Boton imagen que refleja el estado de comunicacion con el modulo Bluetooth
+    private TextView vistaTxt;//Seccion de texto que refleja los datos enviados por el arduino
+
+    //Constantes necesarias para comunicacion. En caso de cambiar de modulo receptor, hay que cambiar estos parametros
+    private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//Identificador Unico Universal (UUID) del modulo bluetooth del arduino
     public static final String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
 
+    //Constructor basico de la clase
     public BluetoothThread(){
-         BluetoothSocket bSocket = null;//Socket para la comunicacion por bluetooth
-         BluetoothDevice bDevice = null;
-         BluetoothAdapter bAdapter = null;
-         OutputStream bOutput=null;
-         InputStream bInput=null;
-         AppCompatActivity actividadOrigen=null;
-         ImageButton bC=null;
+        this.bSocket = null;
+        this.bDevice = null;
+        this.bAdapter = null;
+        this.bOutput=null;
+        this.bInput=null;
+        this.actividadPadre =null;
+        this.estadoComs=false;
+        this.botonConexion =null;
+        this.vistaTxt =null;
+        this.estadoComs=false;
+        this.estadoIStream =false;
     }
 
+    //Constructor de la clase, que solicita la actividad en la que este se esta ejecutando
+    public BluetoothThread(AppCompatActivity actividad){
+        this();//LLamada al constructor basico de la clase
+        setAppCompatActivity(actividad);
+    }
 
+    //Metodos set de la clase
     public void setBluetoothAdapter(BluetoothAdapter adapter) {
         if (adapter == null) {
             bAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -64,12 +91,16 @@ public class BluetoothThread extends Thread{
     public void setInputStream(InputStream stream){
         this.bInput=stream;
     }
+    public void setAppCompatActivity(AppCompatActivity actividad) { this.actividadPadre =actividad; }
+    public void setTextView(TextView vista) { this.vistaTxt =vista; }
     public void setImageButton(ImageButton button){
-        this.bC=button;
+        this.botonConexion=button;
     }
-    public void setAppCompatActivity(AppCompatActivity actividad) { this.actividadOrigen=actividad; }
-    public void setTextView(TextView texto) { this.txt=texto; }
+    public void setEstadoComs(Boolean actual){ this.estadoComs =actual; }
+    public void setEstadoIStream(Boolean actual){ this.estadoIStream =actual; }
 
+
+    //Metodos get de la clase
     public BluetoothAdapter getBluetoothAdapter(){
         return this.bAdapter;
     }
@@ -85,17 +116,23 @@ public class BluetoothThread extends Thread{
     public InputStream getInputStream(){
         return this.bInput;
     }
+    public AppCompatActivity getAppCompatActivity() {return this.actividadPadre;}
+    public Boolean getEstadoComs(){ return this.estadoComs; }
+    public Boolean getEstadoIStream(){ return this.estadoIStream; }
+    public ImageButton getImageButton(){ return this.botonConexion; }
+    public TextView getTextView(){ return this.vistaTxt; }
 
-    public AppCompatActivity getActividadOrigen() {return this.actividadOrigen;}
 
     /**
-     * Funcion encargada para iniciar la comunicacion del dispositivo con el modulo bluetooth
-     * Esta primero verifica que tenga los permisos para la comunicacion necesarios (BLUETOOTH_CONNECT)
-     * En caso de no poseer estos se llama a la funcion requestPermission de ActivityCompat para que no los otorgue
-     * Tras tener los permisos necesarios, la app establece la conexion con el modulo bluetooth especifico usado
-     * La comunicacion sera exitosa si el led del modulo HC-06 deja de parpadear
+     * Funcion run() de la clase Thread sobre-excritas. Esta se encargara ahora de inicializar la comunicacion
+     * bluetooth de la aplicacion con un dispositivo receptor. Esta se ejecutara cuando, al instaciar la clase
+     * en una actividad se ejecute la funcion start() heredada de la clase Thread.
      *
-     * NOTA: Para que esta se lleve acabo correctamente antes hay que haber pareado el modulo con el movil a usar
+     * Si la comunicacion se ha llevado acabo exitosamente, el usuario vera en la interfaz que el boton de conexion
+     * bluetooth ha cambiado a color verde, ademas de que el LED del HC-06 dejara de parpadear.
+     * En caso de no poder haberse conectado, el boton de comunicacion bluetooth se vera de color rojo
+     *
+     * NOTA: Para que esta se lleve acabo correctamente antes hay que haber emparejado el modulo HC-06 con el movil a usar
      *
      */
     @Override
@@ -106,15 +143,15 @@ public class BluetoothThread extends Thread{
         //Para dispositivos con API<31(Android 11 o previos) Solicitanos permisos BLUETOOTH
         if (Build.VERSION.SDK_INT >=31) {//API>=31
             //Verificamos que tengamos o no los permisos necesarios
-            if (ActivityCompat.checkSelfPermission(actividadOrigen.getApplicationContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(actividadPadre.getApplicationContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                 //Solicitamos el permiso de BLUETOOTH_CONNECT al no tenerlo
-                ActivityCompat.requestPermissions(getActividadOrigen(), new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
+                ActivityCompat.requestPermissions(getAppCompatActivity(), new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
             }
         }else{//API<31
             //Verificamos que tengamos o no los permisos necesarios
-            if (ActivityCompat.checkSelfPermission(actividadOrigen.getApplicationContext(), Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(actividadPadre.getApplicationContext(), Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
                 //Solicitamos el permiso de BLUETOOTH al no tenerlo
-                ActivityCompat.requestPermissions(getActividadOrigen(), new String[]{Manifest.permission.BLUETOOTH}, 0);
+                ActivityCompat.requestPermissions(getAppCompatActivity(), new String[]{Manifest.permission.BLUETOOTH}, 0);
             }
         }
 
@@ -130,57 +167,112 @@ public class BluetoothThread extends Thread{
             setBluetoothSocket(this.bDevice.createRfcommSocketToServiceRecord(bUUID));
 
             //Abrimos la conexion por el puerto con el dispositivo esclavo de bluetooth
-            bSocket.connect();
+            getBluetoothSocket().connect();
 
             //Enlazamos la via de conexion de datos entre los 2 dispositivos
             setOutputStream(getBluetoothSocket().getOutputStream());
             setInputStream(getBluetoothSocket().getInputStream());
 
+
+            //Cambiamos la variable de estado de comunicacion a true
+            setEstadoComs(true);
+
+            //Enviamos un mensaje al arduino de que estamos listos para enviar instrucciones, asi como
+            //de recibir aquellas que este mande
             enviarComando("0");
-            state=true;
 
-            //INPUTSTREAM
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while(state){
-                        try {
-                            txt.setText(leerdatos());
-                        } catch (Exception e) {
 
-                        }
-                    }
-                }
-            }).start();
+            //Este thread de recepcipon de datos lo crearemos solo si existe una vista a donde enviar la informacion
+            inicarLecturaDatos(null);
 
         }catch(IOException e){
 
             //Actualizamos el color del Boton y la variable de estado de control
-            bC.setBackgroundColor(Color.RED);
-            state=false;
+            setEstadoComs(false);
+            setEstadoIStream(false);
+            //Cambiamos el color del boton de comunicacion a rojo en el caso de que exista
+            if(getImageButton()!=null) {
+                botonConexion.setBackgroundColor(Color.RED);
+            }
         }
 
-        if(bSocket.isConnected()){
-            bC.setBackgroundColor(Color.GREEN);
+        //Cambiamos el color del boton de comunicacion a verde en el caso de que exista, y la comunicacion
+        //haya sido existosa
+        if(getEstadoComs() && getImageButton()!=null){
+            botonConexion.setBackgroundColor(Color.GREEN);
         }
 
 
     }
 
     /**
-     * Funcion encargada de enviar mensajes al vehiculo con el que se comunica
+     * Esta funcion se encarga de crear un hilo, por el que se puedan recibir datos que el modulo bluetoth
+     * remoto envie a nuestra app. Los datos se envia a una TextView, que se almacenara en la clase
+     *
+     * @param vista: Objeto TextView que recibira los datos que se leen de InputStream. Valores esperados
+     *          -null: se usara la TextView que esta cargada en la clase, cuando se instanció.
+     *          -TextView: se establecera como Textview de la clase y se le enviara los datos leidos de InputStream a esta
+     *
+     * NOTA: En caso de que tanto vista como la TextView de la clase sean null, esta funcion no hara nada
+     */
+    public void inicarLecturaDatos(TextView vista){
+
+        //En caso de querer cambiar la vista a la que se enviaran los datos
+        if(vista!=null){
+            setTextView(vista);
+        }
+
+        //Hacemos que un BluetothThread que este leyendo de IStream finalize
+        if(getEstadoIStream()){
+            setEstadoIStream(false);
+        }
+
+        //TODO:Añadir checkeo de si ya hay abierta una lectura del buffer, antes de inicar otra.
+        // En caso de estarlo, cerrar esta y prepara para abrir otro via de lectura.
+        // probar con una variable boolean, similar a estadComs
+
+        //Creacion del Thread de lectura del InputStream
+        if(getTextView()!=null && getEstadoComs()) {
+
+            setEstadoIStream(true);
+            //Lectura de InputStream
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //Verificamos que la comunicacion sique estando activa
+                    while (getEstadoComs()) {
+                        try {
+                            vistaTxt.setText(leerdatos());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+        }
+    }
+
+    /**
+     * Funcion encargada de enviar mensajes al dispositivo receptor, a traves del OutputStream de la
+     * Comunicacion bluetooth
+     *
      * @param data: Informacion a enviar al receptor
+     *
+     * @return 0:  EL mensaje se envio correctamente
+     *         1:  Hubo un error al enviar el mensaje
+     *         -1: No existe comunicacion con un modulo bluetooth remoto
      */
     public int enviarComando(String data){
 
         //Verificamos que aun estamos conectados al modulo bluetooth
-        if (getBluetoothSocket().isConnected()) {
+        if (getEstadoComs()) {
+
             //Conevrtimos el comando a tipo byte[]
             byte[] comando=data.getBytes();
 
             //Enviamos el comando de funcionamiento al modulo bluetooth
             try {
-                this.bOutput.write(comando);
+                getOutputStream().write(comando);
                 return 0;
             } catch (IOException e) {
                 //Hubo algun error al enviar un mensaje
@@ -188,44 +280,74 @@ public class BluetoothThread extends Thread{
                 return 1;
             }
         } else {
-            //Pequeño mensaje de error, en caso de estar la conexion cerrada
+            //Codigo de error de que no hay una comunicacion abierta
             return -1;
         }
     }
 
-
+    /**
+     *Funcion encargada de leer el buffer de datos que el movil recibe del arduino.
+     *
+     *En cada llamada de la funcion, se leen los datos de InputStream hasta llegar a un final de linea
+     *
+     * @return String: Cadena String de los datos que se han leido del InputStream
+     */
     public String leerdatos() throws IOException {
 
         BufferedReader r = new BufferedReader(new InputStreamReader(getInputStream()));
-        String data=r.readLine();
-        return data;
+        return r.readLine();
     }
 
 
-    public void finConexion(){
-        if(getBluetoothSocket().isConnected()) {
-            state=true;
+    /**
+     * Funcion encargada de cerrar la comunicacion con el modulo bluetooth remoto.
+     *
+     * Esta se encargara de cerrar todos los procesos asociados a la comunicacion con el modulo bluetooth
+     * remoto. Solo se usa en destroyThread() cuando vamos a cerrar la conexion y descartar este Thread
+     *
+     */
+    private void finConexion(){
+        if(getEstadoComs()) {
             //Enviamos un comando al arduino para que comprenda que se ha acabado la conexion
             enviarComando("1");
+
+            //Cambiamos el estado de la comunicacion
+            this.estadoComs=false;
+            this.estadoIStream=false;
             try {
-                getOutputStream().close();
-                getInputStream().close();
+                this.bInput.close();
+                this.bOutput.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             //Cerramos la conexion con el arduino
             try {
-                bSocket.close();
+               this.bSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-            //Ponemos bSocket, bInput y bOutput a null para acabar con el cerrado de conexion
+           //Vaciamos las demas variables, cambiando su  valor a null
             this.bSocket=null;
             this.bDevice=null;
             this.bAdapter=null;
             this.bInput=null;
             this.bOutput=null;
+            this.botonConexion=null;
+            this.vistaTxt=null;
+    }
+
+    /**
+     * Funcion a la que se llama para poder destruir correctamente la clase BluetoothThread, o para cerrar
+     * definitivamente la comunicacion bluetooth.
+     *
+     * Esta hara primero una llamada al metodo finConexion() con el que cerrar la conexion. Por ultimo
+     * se ejecutara el metodo interrupt() de la clase.
+     *
+     */
+    public void destroyThread(){
+        finConexion();
+        interrupt();
     }
 
 }

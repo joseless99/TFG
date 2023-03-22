@@ -12,13 +12,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//TODO: Incluir una seccion de UI de la actividad donde se pueda recibir datos enviados al
-// InputStream de la comunicacion bluetooth. Este principalmente recibirá la distancia del vehiculo
-// con un posible obstaculo que tenga en frente
-
-//TODO: Crear un metodo que permita obtener el mensaje que haya sido enviado a InputStream
-
-//TODO: revisar documentacion del codigo para actualizar con respecto a los combios
+//TODO: revisar documentacion del codigo para actualizar con respecto a los combios que se hagan
 
 /**
  * Actividad de ejemplo de la aplicacion Android desarrollada para el TFG
@@ -34,7 +28,7 @@ import android.widget.Toast;
  * mensaje al usuario de fallo de inicio de esta conexion.
  *
  * @author Juan Jose Ropero Cerro (i82rocej)
- * @version 1.1
+ * @version 1.0
  */
 public class System1Activity extends AppCompatActivity {
     //Creamos la variable que usaremos para la comunicacion
@@ -67,8 +61,7 @@ public class System1Activity extends AppCompatActivity {
         //Tratamos de iniciar la comunicacion con el modulo bluetooth esclavo, asignado a
         //esta actividad. Este cargará de forma paralela a la carga de la interfaz principal
 
-        blueThread =new BluetoothThread();
-        blueThread.setAppCompatActivity(this);
+        blueThread =new BluetoothThread(this);
         blueThread.setBluetoothAdapter(BluetoothAdapter.getDefaultAdapter());
         blueThread.setImageButton(bC);
         blueThread.setTextView(txt);
@@ -224,7 +217,7 @@ public class System1Activity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        blueThread.finConexion();
+        blueThread.destroyThread();
         blueThread =null;
     }
 }
