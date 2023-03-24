@@ -19,8 +19,8 @@
 #define M2RETROCESO 11
 
 //Pines del sensor HC-SR04
-#define TRIGGER 8
-#define ECHO 7
+#define TRIGGER A0
+#define ECHO A1
 char dato;//Variable que almacena los datos que se leen del modulo bluetooth
 bool activo;//Estado de conexion con el sistema Maestro
 void setup() {

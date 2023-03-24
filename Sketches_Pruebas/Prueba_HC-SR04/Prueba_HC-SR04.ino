@@ -3,8 +3,8 @@
  */
 
 //Pines del sensor HC-SR04
-#define TRIGGER 8
-#define ECHO 7
+#define TRIGGER A0
+#define ECHO A1
 
 void setup() {
   // put your setup code here, to run once:
