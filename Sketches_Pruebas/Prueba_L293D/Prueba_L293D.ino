@@ -1,5 +1,6 @@
 /**
  * SKetch usado para probar el funcionamiento del controlador de motores L293D
+ * Este inicializa los motores y los hace girar el direcciones opuestas, y cambia periodicamente los giros de estos
  */
 
 #define EN1 2

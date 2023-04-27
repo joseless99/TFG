@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- Interfaz usada por la actividad System1Activity -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,6 +8,7 @@
     android:layout_height="match_parent"
     tools:context=".System1Activity">
 
+    <!-- Boton usado para reflejar el estado de la conexion Bluetooth-->
     <ImageButton
         android:id="@+id/bConexion"
         android:layout_width="82dp"
@@ -24,7 +27,7 @@
         app:layout_constraintVertical_bias="0.0"
 
         />
-
+<!--Conjunto de Botones con los que enviamos comandos al dispositivo Bluetooth remoto -->
     <Button
         android:id="@+id/bStop"
         android:layout_width="99dp"
@@ -86,6 +89,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.847" />
 
+    <!--Text View usada para mostrar informacion que envie el dispositivo remoto -->
     <TextView
         android:id="@+id/data"
         android:layout_width="130dp"

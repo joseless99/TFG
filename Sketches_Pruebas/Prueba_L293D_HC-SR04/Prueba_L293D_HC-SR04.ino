@@ -1,6 +1,6 @@
 /**
  * Sketch de prueba de integracion del L293D y el HC-SR04.
- * Este sketch ha sido usado para probar si se podian alimentar al HC-SR04 y el pin de 5V del L293D, con el pin de 5V del arduino
+ * Este sketch ha sido usado para probar si se podian alimentar al HC-SR04 y el pin Vcc1 del L293D, con el pin de 5V del arduino
  */
 #define TRIGGER 7
 #define ECHO 8
@@ -50,13 +50,18 @@ void loop() {
 }
 
 void uSensor(){
-    //Activamos el pin emisor de la onda sonica(Trigger)
+
+  
+  //Activamos el pin emisor de la onda sonica(Trigger)
   digitalWrite(TRIGGER,HIGH);
+  
   delayMicroseconds(10);//delay de funcionamiento del pin emisor
   //Desactivamos el pin emisor
   digitalWrite(TRIGGER,LOW);
-  long timer=pulseIn(ECHO,HIGH);//devuelve el tiempo que ha estado en HIGH en microsegundos
-  //ecuacion de calculo de la distancia
-  //0.01715= velocidad de la onda (343m/s=0.0343cm/microsegundos) entre 2(ida y vuelta de la onda )
-  Serial.println(timer*0.01715);
+  
+  long timer=pulseIn(ECHO,HIGH);//devuelve el tiempo que ha tardado en cambiar de LOW a HIGH
+  
+  //ecuacion de calculo de la distancia:
+  //(tiempo de viaje de la onda)/2 x velocidad de la onda == distancia
+  Serial.println((timer/2)*0.0343);
 }

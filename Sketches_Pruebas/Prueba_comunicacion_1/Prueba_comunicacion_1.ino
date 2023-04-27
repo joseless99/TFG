@@ -12,8 +12,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-    if(Serial1.available())
+    if(Serial1.available())//Comprobamos que haya contenidos a leer del modulo Bluetooth
     {
-      Serial.write(Serial1.read());
+      Serial.write(Serial1.read());//Imprimimos lo leido de Serial1
     }
 }

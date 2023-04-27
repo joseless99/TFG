@@ -12,8 +12,8 @@ import android.widget.Toast;
 /**
  *  Actividad principal de la aplicacion Android desarrollada para el TFG
  *
- *  Se trata de un menu de acceso a distintos posibles dispositivos remotos a los que poder comunicarse
- *  usando la aplicacion
+ *  Se trata de un menu de acceso  inicial a distintos posibles dispositivos remotos a los que poder comunicarse
+ *  usando la aplicacion. En nuestro caso solo tenemos acceso a 2 botones con el fin de reflejar como podria verse.
  */
 
 public class MainActivity extends AppCompatActivity {

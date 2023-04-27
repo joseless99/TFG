@@ -198,17 +198,18 @@ void giroDerecha(){
 
 float uSensor(){
 
+
   //Activamos el pin emisor de la onda sonica(Trigger)
   digitalWrite(TRIGGER,HIGH);
+  
   delayMicroseconds(10);//delay de funcionamiento del pin emisor
   //Desactivamos el pin emisor
   digitalWrite(TRIGGER,LOW);
-  long timer=pulseIn(ECHO,HIGH);//devuelve el tiempo que el pin hecho ha tardado de pasar de LOW a HIGH en microsegundos
- 
-  /**ecuacion de calculo de la distancia
-   * timer: Tiempo que se ha tardado en recibir la onda emitida por el pin TRIGGER del HC-SR04
-   * 0.01715: Se obtiene de dividir la velocidad de la onda ultrasonica (343m/s =>0.0343cm/microsegundos) entre 2, 
-   * ya que la onda recorre 2 veces la distancia del vehiculo al coche (ida y vuelta)
-   */ 
-  return(timer*0.01715);
+  
+  long timer=pulseIn(ECHO,HIGH);//devuelve el tiempo que ha tardado en cambiar de LOW a HIGH
+   
+  //ecuacion de calculo de la distancia:
+  //(tiempo de viaje de la onda)/2 x velocidad de la onda == distancia
+  return((timer/2)*0.0343);
+
  }
