@@ -12,8 +12,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//TODO: revisar documentacion del codigo para actualizar con respecto a los combios que se hagan
-
 /**
  * Actividad de ejemplo de la aplicacion Android desarrollada para el TFG
  *
@@ -47,7 +45,8 @@ public class System1Activity extends AppCompatActivity {
         setContentView(R.layout.system_1_layout);
 
         //MEnsaje informativo para el usuario
-        Toast.makeText(System1Activity.this, "Iniciando Comunicacion.Espere un poco", Toast.LENGTH_SHORT).show();
+        Toast.makeText(System1Activity.this, "Iniciando Comunicacion.Espere un poco",
+                Toast.LENGTH_SHORT).show();
 
         //Sincronizamos los elementos del layout con los definidos en System1Activity
         bF = findViewById(R.id.bForward);
@@ -76,9 +75,11 @@ public class System1Activity extends AppCompatActivity {
                 if(res==0){
                     updateUI("F");
                 }else if(res==1){
-                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado",
+                            Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se pueden enviar mensajes", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se " +
+                            "pueden enviar mensajes", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -91,9 +92,11 @@ public class System1Activity extends AppCompatActivity {
                 if(res==0){
                     updateUI("B");
                 }else if(res==1){
-                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado",
+                            Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se pueden enviar mensajes", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se" +
+                            " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -106,9 +109,11 @@ public class System1Activity extends AppCompatActivity {
                 if(res==0){
                     updateUI("R");
                 }else if(res==1){
-                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado",
+                            Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se pueden enviar mensajes", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se" +
+                            " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -121,9 +126,11 @@ public class System1Activity extends AppCompatActivity {
                 if(res==0){
                     updateUI("L");
                 }else if(res==1){
-                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado",
+                            Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se pueden enviar mensajes", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se" +
+                            " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -136,9 +143,11 @@ public class System1Activity extends AppCompatActivity {
                 if(res==0){
                     updateUI("S");
                 }else if(res==1){
-                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado",
+                            Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se pueden enviar mensajes", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se" +
+                            " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -147,10 +156,12 @@ public class System1Activity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(blueThread.getBluetoothSocket().isConnected()){
-                    Toast.makeText(System1Activity.super.getApplicationContext(), "La conexion esta activa y funcionando", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.super.getApplicationContext(), "La conexion esta " +
+                            "activa y funcionando", Toast.LENGTH_SHORT).show();
                 }else
                 {
-                    Toast.makeText(System1Activity.super.getApplicationContext(),"Reintentando conexion",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(System1Activity.super.getApplicationContext(),"Reintentando conexion",
+                            Toast.LENGTH_SHORT).show();
                     //Como no podemos destruir el Thread lo reconstruimos desde 0
                     blueThread =new BluetoothThread();
                     blueThread.setAppCompatActivity(System1Activity.this);

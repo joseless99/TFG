@@ -149,9 +149,11 @@ public class BluetoothThread extends Thread{
             }
         }else{//API<31
             //Verificamos que tengamos o no los permisos necesarios
-            if (ActivityCompat.checkSelfPermission(actividadPadre.getApplicationContext(), Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(actividadPadre.getApplicationContext(), Manifest.permission.BLUETOOTH)
+                    != PackageManager.PERMISSION_GRANTED) {
                 //Solicitamos el permiso de BLUETOOTH al no tenerlo
-                ActivityCompat.requestPermissions(getAppCompatActivity(), new String[]{Manifest.permission.BLUETOOTH}, 0);
+                ActivityCompat.requestPermissions(getAppCompatActivity(), new String[]{Manifest.permission.BLUETOOTH},
+                        0);
             }
         }
 
@@ -226,10 +228,6 @@ public class BluetoothThread extends Thread{
         if(getEstadoIStream()){
             setEstadoIStream(false);
         }
-
-        //TODO:Añadir checkeo de si ya hay abierta una lectura del buffer, antes de inicar otra.
-        // En caso de estarlo, cerrar esta y prepara para abrir otro via de lectura.
-        // probar con una variable boolean, similar a estadComs
 
         //Creacion del Thread de lectura del InputStream
         if(getTextView()!=null && getEstadoComs()) {

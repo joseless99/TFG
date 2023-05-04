@@ -49,6 +49,5 @@ void loop() {
     Serial.println("No se ha recibido ningun comando");
     Serial.println("No se ha enviado ningun comando");
   }
-  
   delay(1000);//Delay para visualizar resulatdos de la prueba mejor
 }
