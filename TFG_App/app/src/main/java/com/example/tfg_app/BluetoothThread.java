@@ -46,9 +46,10 @@ public class BluetoothThread extends Thread{
     private ImageButton botonConexion;//Boton imagen que refleja el estado de comunicacion con el modulo Bluetooth
     private TextView vistaTxt;//Seccion de texto que refleja los datos enviados por el arduino
 
-    //Constantes necesarias para comunicacion. En caso de cambiar de modulo receptor, hay que cambiar estos parametros
-    private static final UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//Identificador Unico Universal (UUID) del modulo bluetooth del arduino
-    public static final String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
+    //Variables necesarias para comunicacion.
+    //Los valores por defecto se pueden cambiar con los metodos set/get asociados a estos
+    private  UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//Identificador Unico Universal (UUID) del modulo bluetooth del arduino
+    private String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
 
     //Constructor basico de la clase
     public BluetoothThread(){
@@ -98,7 +99,8 @@ public class BluetoothThread extends Thread{
     }
     public void setEstadoComs(Boolean actual){ this.estadoComs =actual; }
     public void setEstadoIStream(Boolean actual){ this.estadoIStream =actual; }
-
+    public void setbUUID(String newUuid){this.bUUID=UUID.fromString(newUuid);}
+    public void setbMAC(String newMac){this.bMAC=newMac;}
 
     //Metodos get de la clase
     public BluetoothAdapter getBluetoothAdapter(){
@@ -121,6 +123,8 @@ public class BluetoothThread extends Thread{
     public Boolean getEstadoIStream(){ return this.estadoIStream; }
     public ImageButton getImageButton(){ return this.botonConexion; }
     public TextView getTextView(){ return this.vistaTxt; }
+    public UUID getbUUID(){return this.bUUID;}
+    public String getbMAC(){return this.bMAC;}
 
 
     /**
