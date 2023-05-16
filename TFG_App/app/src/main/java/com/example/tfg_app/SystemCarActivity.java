@@ -15,7 +15,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelUuid;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -43,7 +42,7 @@ import java.util.ArrayList;
  * @author Juan Jose Ropero Cerro (i82rocej)
  * @version 1.0
  */
-public class System1Activity extends AppCompatActivity {
+public class SystemCarActivity extends AppCompatActivity {
     //Creamos la variable que usaremos para la comunicacion
     private BluetoothThread blueThread = null;
 
@@ -89,9 +88,9 @@ public class System1Activity extends AppCompatActivity {
         }
 
         //Carga del Layout de la actividad
-        setContentView(R.layout.system_1_layout);
+        setContentView(R.layout.system_car_layout);
 
-        //Sincronizamos los elementos del layout con los definidos en System1Activity
+        //Sincronizamos los elementos del layout con los definidos en SystemCarActivity
         bF = findViewById(R.id.bForward);
         bB = findViewById(R.id.bBack);
         bR = findViewById(R.id.bRight);
@@ -110,7 +109,7 @@ public class System1Activity extends AppCompatActivity {
         blueThread.setTextView(txt);
         blueThread.start();
 
-        Toast.makeText(System1Activity.this, "Iniciando Comunicacion con " + MAC,
+        Toast.makeText(SystemCarActivity.this, "Iniciando Comunicacion con " + MAC,
                 Toast.LENGTH_SHORT).show();
 
 
@@ -128,10 +127,10 @@ public class System1Activity extends AppCompatActivity {
                 if (res == 0) {
                     updateUI("F");
                 } else if (res == 1) {
-                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado",
+                    Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se " +
+                    Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se " +
                             "pueden enviar mensajes", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -145,10 +144,10 @@ public class System1Activity extends AppCompatActivity {
                 if (res == 0) {
                     updateUI("B");
                 } else if (res == 1) {
-                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado",
+                    Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se" +
+                    Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se" +
                             " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -162,10 +161,10 @@ public class System1Activity extends AppCompatActivity {
                 if (res == 0) {
                     updateUI("R");
                 } else if (res == 1) {
-                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado",
+                    Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se" +
+                    Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se" +
                             " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -179,10 +178,10 @@ public class System1Activity extends AppCompatActivity {
                 if (res == 0) {
                     updateUI("L");
                 } else if (res == 1) {
-                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado",
+                    Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se" +
+                    Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se" +
                             " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -196,10 +195,10 @@ public class System1Activity extends AppCompatActivity {
                 if (res == 0) {
                     updateUI("S");
                 } else if (res == 1) {
-                    Toast.makeText(System1Activity.this, "El mensaje no pudo ser enviado",
+                    Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(System1Activity.this, "La conexion esta cerrada,y no se" +
+                    Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se" +
                             " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -211,17 +210,17 @@ public class System1Activity extends AppCompatActivity {
 
                 //Permisos en Android 12 o superior
                 if (Build.VERSION.SDK_INT >= 31) {//API>=31
-                    if (ActivityCompat.checkSelfPermission(System1Activity.this,
+                    if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
                             Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
 
-                        ActivityCompat.requestPermissions(System1Activity.this,
+                        ActivityCompat.requestPermissions(SystemCarActivity.this,
                                 new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
                     }
                 } else {
-                    if (ActivityCompat.checkSelfPermission(System1Activity.this,
+                    if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
                             Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
 
-                        ActivityCompat.requestPermissions(System1Activity.this,
+                        ActivityCompat.requestPermissions(SystemCarActivity.this,
                                 new String[]{Manifest.permission.BLUETOOTH}, 0);
                     }
 
@@ -234,7 +233,7 @@ public class System1Activity extends AppCompatActivity {
                 //Cargamos la lista en la vista.
                 //Su contenido se actualiza en el BroadcastReceiver.
                 listaMac = new ArrayList<>();
-                adapter = new ArrayAdapter(System1Activity.this,
+                adapter = new ArrayAdapter(SystemCarActivity.this,
                         android.R.layout.simple_list_item_1, android.R.id.text1, listaMac);
                 listaDsp.setAdapter(adapter);
 
@@ -253,17 +252,17 @@ public class System1Activity extends AppCompatActivity {
 
                         //Solicitud de permisos
                         if (Build.VERSION.SDK_INT >= 31) {//API>=31
-                            if (ActivityCompat.checkSelfPermission(System1Activity.this,
+                            if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
                                     Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
 
-                              ActivityCompat.requestPermissions(System1Activity.this,
+                              ActivityCompat.requestPermissions(SystemCarActivity.this,
                                       new String[]{Manifest.permission.BLUETOOTH_SCAN},0);
                             }
                         }else {//API<31
-                            if (ActivityCompat.checkSelfPermission(System1Activity.this,
+                            if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
                                     Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
 
-                                ActivityCompat.requestPermissions(System1Activity.this,
+                                ActivityCompat.requestPermissions(SystemCarActivity.this,
                                         new String[]{Manifest.permission.BLUETOOTH}, 0);
                             }
                         }
@@ -275,7 +274,7 @@ public class System1Activity extends AppCompatActivity {
                         String newMac  = adapterView.getItemAtPosition(i).toString();
 
                         //Reiniciamos la actividad
-                        Intent rel=new Intent(System1Activity.this,System1Activity.class);
+                        Intent rel=new Intent(SystemCarActivity.this, SystemCarActivity.class);
                         rel.putExtra("MAC",newMac);
 
                         //Reiniciamos la actividad

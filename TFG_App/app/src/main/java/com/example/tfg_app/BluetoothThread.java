@@ -31,7 +31,7 @@ import java.util.UUID;
  * Clase creada para llevar acabo una comunicacion con un modulo bluetooth remoto
  *
  * Esta clase se encarga de llevar a cabo toda la comunicacion bidireccional con un modulo bluetoth remoto.
- * Originalmente ha sido diseñada para la clase System1Activity pero puede ser tambie usada para otras
+ * Originalmente ha sido diseñada para la clase SystemCarActivity pero puede ser tambie usada para otras
  * actividades similares que requieran de comunicacion bidireccional.
  *
  * Una vez establecida la comunicacion con un modulo remoto, inmediatamente se inicia un Thread para la lectura
@@ -49,7 +49,7 @@ public class BluetoothThread extends Thread {
     private AppCompatActivity actividadPadre;//Actividad en la que ejecutamos esta clase. Necesario para permisos de ejecucion
     private Boolean estadoComs;//Variable usada para controlar el estado de comunicacion con el modulo bluetooth
     private Boolean estadoIStream;
-    //Parametros adicionales, especificos de la UI de System1Activity.
+    //Parametros adicionales, especificos de la UI de SystemCarActivity.
     private ImageButton botonConexion;//Boton imagen que refleja el estado de comunicacion con el modulo Bluetooth
     private TextView vistaTxt;//Seccion de texto que refleja los datos enviados por el arduino
 

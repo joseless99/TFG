@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
      * Funcion que se encarga de iniciar la actividad asociada al vehiculo electronico de ejemplo
      */
     public void startSystem1(){
-        //Creamos el Intent necesario para iniciar la actividad System1Activity
-        Intent a = new Intent(this,System1Activity.class);
+        //Creamos el Intent necesario para iniciar la actividad SystemCarActivity
+        Intent a = new Intent(this, SystemCarActivity.class);
         a.putExtra("MAC","00:20:04:BD:D4:DE");
         //Iniciamos la actividad
         startActivity(a);

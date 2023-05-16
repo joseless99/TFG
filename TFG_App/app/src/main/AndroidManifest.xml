@@ -25,7 +25,7 @@
         android:theme="@style/Theme.TFG_App"
         tools:targetApi="31">
         <activity
-            android:name=".System1Activity"
+            android:name=".SystemCarActivity"
             android:exported="false"
             android:screenOrientation="portrait">
             <meta-data
