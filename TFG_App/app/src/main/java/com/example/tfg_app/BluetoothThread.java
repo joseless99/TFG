@@ -49,15 +49,12 @@ public class BluetoothThread extends Thread {
     private AppCompatActivity actividadPadre;//Actividad en la que ejecutamos esta clase. Necesario para permisos de ejecucion
     private Boolean estadoComs;//Variable usada para controlar el estado de comunicacion con el modulo bluetooth
     private Boolean estadoIStream;
+    private UUID bUUID;//Identificador Unico Universal (UUID) del perfil SPP del Bluetooth
+    private String bMAC;//Identificador MAC del modulo HC-06 usado
+
     //Parametros adicionales, especificos de la UI de SystemCarActivity.
     private ImageButton botonConexion;//Boton imagen que refleja el estado de comunicacion con el modulo Bluetooth
     private TextView vistaTxt;//Seccion de texto que refleja los datos enviados por el arduino
-
-    //Variables necesarias para comunicacion.
-    //Los valores por defecto se pueden cambiar con los metodos set/get asociados a estos
-    private UUID bUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//Identificador Unico Universal (UUID) del perfil SPP del Bluetooth
-    private String bMAC = "00:20:04:BD:D4:DE";//Identificador MAC del modulo HC-06 usado
-
 
     //Constructor basico de la clase
     public BluetoothThread() {
@@ -71,6 +68,8 @@ public class BluetoothThread extends Thread {
         this.vistaTxt = null;
         this.estadoComs = false;
         this.estadoIStream = false;
+        this.bMAC=null;
+        this.bUUID=null;
     }
 
 
@@ -227,7 +226,6 @@ public class BluetoothThread extends Thread {
             setBluetoothDevice(this.bAdapter.getRemoteDevice(bMAC));
 
             //Establecemos el puerto de comunicacion necesario con bUUID
-            //TODO:Añadir extraccion de UUIDs del dispositivo a conectar
             setBluetoothSocket(this.bDevice.createRfcommSocketToServiceRecord(bUUID));
 
             //Abrimos la conexion por el puerto con el dispositivo esclavo de bluetooth
@@ -249,7 +247,7 @@ public class BluetoothThread extends Thread {
             //Este thread de recepcipon de datos lo crearemos solo si existe una vista a donde enviar la informacion
             inicarLecturaDatos(null);
 
-        } catch (IOException e) {
+        } catch (Exception e) {//Si hay cualquier fallo marcamos que no se ha establecido la conexion
 
             //Actualizamos el color del Boton y la variable de estado de control
             setEstadoComs(false);
@@ -260,6 +258,19 @@ public class BluetoothThread extends Thread {
             }
         }
 
+        this.actividadPadre.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String mssg;
+                if(estadoComs) {
+                    mssg="Comunicacion establecida";
+                }else{
+                    mssg="Error, no pudo hacerse la conexion";
+                }
+
+                Toast.makeText(actividadPadre, mssg, Toast.LENGTH_SHORT).show();
+            }
+        });
         //Cambiamos el color del boton de comunicacion a verde en el caso de que exista, y la comunicacion
         //haya sido existosa
         if (getEstadoComs() && getImageButton() != null) {

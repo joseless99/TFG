@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Actividad de ejemplo de la aplicacion Android desarrollada para el TFG
@@ -104,7 +105,10 @@ public class SystemCarActivity extends AppCompatActivity {
         scanBAdap = BluetoothAdapter.getDefaultAdapter();//Este lo guardamos tambien para despues escanear
         blueThread = new BluetoothThread(this);
         blueThread.setBluetoothAdapter(scanBAdap);
+        //MAC del sistema remoto. Se obtiene del Intent que se usa para iniciar esta actividad
         blueThread.setbMAC(MAC);
+        //UUID del perfil SPP de Bluetooth
+        blueThread.setbUUID(UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"));
         blueThread.setImageButton(bC);
         blueThread.setTextView(txt);
         blueThread.start();
