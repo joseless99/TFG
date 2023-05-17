@@ -258,6 +258,7 @@ public class BluetoothThread extends Thread {
             }
         }
 
+        //Mostramos un mensaje al usuario tras intentar establecer la comunicacion
         this.actividadPadre.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -271,6 +272,7 @@ public class BluetoothThread extends Thread {
                 Toast.makeText(actividadPadre, mssg, Toast.LENGTH_SHORT).show();
             }
         });
+
         //Cambiamos el color del boton de comunicacion a verde en el caso de que exista, y la comunicacion
         //haya sido existosa
         if (getEstadoComs() && getImageButton() != null) {
