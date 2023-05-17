@@ -186,7 +186,7 @@ public class SystemCarActivity extends AppCompatActivity {
 
 
     /**
-     * Metodo encargado de resetear los colores de los botones del system_1_layout.xml al color inicial definicdo
+     * Metodo encargado de resetear los colores de los botones del system_car_layout.xml al color inicial definicdo
      */
     private void resetColor() {
         //Variable que almacena el color por defecto de los botones decidido
