@@ -127,16 +127,7 @@ public class SystemCarActivity extends AppCompatActivity {
         bF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int res = blueThread.enviarComando("F");
-                if (res == 0) {
-                    updateUI("F");
-                } else if (res == 1) {
-                    Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se " +
-                            "pueden enviar mensajes", Toast.LENGTH_SHORT).show();
-                }
+                accionBotonControlRemoto("F");
             }
         });
 
@@ -144,16 +135,7 @@ public class SystemCarActivity extends AppCompatActivity {
         bB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int res = blueThread.enviarComando("B");
-                if (res == 0) {
-                    updateUI("B");
-                } else if (res == 1) {
-                    Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se" +
-                            " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
-                }
+                accionBotonControlRemoto("B");
             }
         });
 
@@ -161,16 +143,7 @@ public class SystemCarActivity extends AppCompatActivity {
         bR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int res = blueThread.enviarComando("R");
-                if (res == 0) {
-                    updateUI("R");
-                } else if (res == 1) {
-                    Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se" +
-                            " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
-                }
+                accionBotonControlRemoto("R");
             }
         });
 
@@ -178,16 +151,7 @@ public class SystemCarActivity extends AppCompatActivity {
         bL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int res = blueThread.enviarComando("L");
-                if (res == 0) {
-                    updateUI("L");
-                } else if (res == 1) {
-                    Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se" +
-                            " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
-                }
+                accionBotonControlRemoto("L");
             }
         });
 
@@ -195,16 +159,7 @@ public class SystemCarActivity extends AppCompatActivity {
         bS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int res = blueThread.enviarComando("S");
-                if (res == 0) {
-                    updateUI("S");
-                } else if (res == 1) {
-                    Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se" +
-                            " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
-                }
+                accionBotonControlRemoto("S");
             }
         });
 
@@ -339,6 +294,27 @@ public class SystemCarActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Metodo asociado a cada boton que envia comandos al dispositivo remoto.
+     * Creado para simplificar el codigo de los botones de control dle sistema remoto.
+     *
+     * @param comando: Comando a enviar al dispositivo remoto
+     */
+    public void accionBotonControlRemoto(String comando){
+        //Enviamos el comando por Bluetooth
+        int res = blueThread.enviarComando(comando);
+
+        //En funcion de lo que resulte de este ejecutamos cierta accion
+        if (res == 0) {
+            updateUI(comando);
+        } else if (res == 1) {
+            Toast.makeText(SystemCarActivity.this, "El mensaje no pudo ser enviado",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se" +
+                    " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     /**
      * Metodo que se activa cuando se cierra esta actividad. Finaliza la comunicaciones abiertos y
