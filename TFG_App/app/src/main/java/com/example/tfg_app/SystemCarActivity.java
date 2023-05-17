@@ -55,6 +55,7 @@ public class SystemCarActivity extends AppCompatActivity {
     private ArrayAdapter adapter;
     private BluetoothAdapter scanBAdap;
     private String MAC;
+    private ListView listaDsp;//ListView de dispositivos remotos encontrados con accionEscaneoBluetooth()
 
     //BROADCAST RECEIVER para el escaneo de dispositivos cercanos
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -167,81 +168,15 @@ public class SystemCarActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //Permisos en Android 12 o superior
-                if (Build.VERSION.SDK_INT >= 31) {//API>=31
-                    if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
-                            Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-
-                        ActivityCompat.requestPermissions(SystemCarActivity.this,
-                                new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
-                    }
-                } else {
-                    if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
-                            Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
-
-                        ActivityCompat.requestPermissions(SystemCarActivity.this,
-                                new String[]{Manifest.permission.BLUETOOTH}, 0);
-                    }
-
-                }
-
-                //Cargamos nueva vista
-                setContentView(R.layout.bt_devices);
-                ListView listaDsp = findViewById(R.id.dispositivos);
-
-                //Cargamos la lista en la vista.
-                //Su contenido se actualiza en el BroadcastReceiver.
-                listaMac = new ArrayList<>();
-                adapter = new ArrayAdapter(SystemCarActivity.this,
-                        android.R.layout.simple_list_item_1, android.R.id.text1, listaMac);
-                listaDsp.setAdapter(adapter);
-
-                //Iniciamos descubrimiento de dispositivos
-                //Verificamos previamente que no se estuviese descurbiendo
-                if (scanBAdap.isDiscovering()) {
-                    scanBAdap.cancelDiscovery();
-                }
-                scanBAdap.startDiscovery();
-
+                //Iniciamos el discovery y enlazamos una lista a la ListView a generar
+                accionEscaneoBluetooth();
 
                 //Damos una accion a la lista en caso de pulsar un elemento de esta
                 listaDsp.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                        //Solicitud de permisos
-                        if (Build.VERSION.SDK_INT >= 31) {//API>=31
-                            if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
-                                    Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-
-                              ActivityCompat.requestPermissions(SystemCarActivity.this,
-                                      new String[]{Manifest.permission.BLUETOOTH_SCAN},0);
-                            }
-                        }else {//API<31
-                            if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
-                                    Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
-
-                                ActivityCompat.requestPermissions(SystemCarActivity.this,
-                                        new String[]{Manifest.permission.BLUETOOTH}, 0);
-                            }
-                        }
-
-                        //Dejamos de descubrir
-                        scanBAdap.cancelDiscovery();
-
-                        //Extraemos la MAC a usar
-                        String newMac  = adapterView.getItemAtPosition(i).toString();
-
-                        //Reiniciamos la actividad
-                        Intent rel=new Intent(SystemCarActivity.this, SystemCarActivity.class);
-                        rel.putExtra("MAC",newMac);
-
-                        //Reiniciamos la actividad
-                        finish();
-                        startActivity(rel);
-
-
-
+                        //Reiniciamos SystemCarActivity, pasandole la nueva MAC a hacer
+                        accionListViewItem(adapterView,i);
                     }
                 });
 
@@ -251,7 +186,7 @@ public class SystemCarActivity extends AppCompatActivity {
 
 
     /**
-     * Funcion encargada de resetear los colores de los botones del system_1_layout.xml al color inicial definicdo
+     * Metodo encargado de resetear los colores de los botones del system_1_layout.xml al color inicial definicdo
      */
     private void resetColor() {
         //Variable que almacena el color por defecto de los botones decidido
@@ -269,7 +204,7 @@ public class SystemCarActivity extends AppCompatActivity {
     }
 
     /**
-     * Funcion que actualiza los colores de los botones en funcion de aquel que se haya pulsado.
+     * Metodo que actualiza los colores de los botones en funcion de aquel que se haya pulsado.
      *
      *  Esta primero llama a resetColor() para reestablecer los botones al color original(Azul)
      *  Despues cambia el ultimo boton pulsado a color verde para relfejar cual fue activado
@@ -277,7 +212,7 @@ public class SystemCarActivity extends AppCompatActivity {
      * @param data Valor para saber que boton hay que cambiar a verde
      */
     private void updateUI(String data) {
-        //LLamada a la funcion resetClor()
+        //LLamada al metodo resetClor()
         resetColor();
 
         //Decidimos que boton hemos de actualizar a verde
@@ -300,7 +235,7 @@ public class SystemCarActivity extends AppCompatActivity {
      *
      * @param comando: Comando a enviar al dispositivo remoto
      */
-    public void accionBotonControlRemoto(String comando){
+    private void accionBotonControlRemoto(String comando){
         //Enviamos el comando por Bluetooth
         int res = blueThread.enviarComando(comando);
 
@@ -314,6 +249,98 @@ public class SystemCarActivity extends AppCompatActivity {
             Toast.makeText(SystemCarActivity.this, "La conexion esta cerrada,y no se" +
                     " pueden enviar mensajes", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Metodo creado para el ImageButton de la actividad.
+     *
+     * Este enlaza una lista String con la ListView que se genera para mostrar el conjunto de dispositivos
+     * remotos a los que poder iniciar una nueva conexión.
+     * Tambien inincializa el proceso de descubrimiento de dispositivos.
+     *
+     */
+    private void accionEscaneoBluetooth(){
+
+        //Permisos en Android 12 o superior
+        if (Build.VERSION.SDK_INT >= 31) {//API>=31
+            if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
+                    Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(SystemCarActivity.this,
+                        new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
+            }
+        } else {
+            if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
+                    Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(SystemCarActivity.this,
+                        new String[]{Manifest.permission.BLUETOOTH}, 0);
+            }
+
+        }
+
+        //Cargamos nueva vista
+        setContentView(R.layout.bt_devices);
+        listaDsp = findViewById(R.id.dispositivos);
+
+        //Cargamos la lista donde guardamos los dispositivos en la vista.
+        //Su contenido se actualiza en el BroadcastReceiver.
+        listaMac = new ArrayList<>();
+        adapter = new ArrayAdapter(SystemCarActivity.this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, listaMac);
+        listaDsp.setAdapter(adapter);
+
+        //Iniciamos descubrimiento de dispositivos
+        if (scanBAdap.isDiscovering()) {//Verificamos previamente que no se estuviese descurbiendo
+            scanBAdap.cancelDiscovery();
+        }
+        scanBAdap.startDiscovery();
+
+    }
+
+    /**
+     * Metodo de funcionalidad de los items de la ListView listaDsp
+     *
+     * Esta actua sobre la lista de dispositivos remotos a elegir. Una vez elegido un nuevo
+     * dispositivo al que conectarse este metodo se encargará de reiniciar la actividad SystemCar.
+     *
+     * @param adapterView: adapterView del metodo onItemClick() de la ListView()
+     * @param i: i del metodo onItemClick() de la ListView()
+     */
+
+    private void accionListViewItem(AdapterView<?> adapterView, int i){
+
+        //Solicitud de permisos
+        if (Build.VERSION.SDK_INT >= 31) {//API>=31
+            if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
+                    Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(SystemCarActivity.this,
+                        new String[]{Manifest.permission.BLUETOOTH_SCAN},0);
+            }
+        }else {//API<31
+            if (ActivityCompat.checkSelfPermission(SystemCarActivity.this,
+                    Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(SystemCarActivity.this,
+                        new String[]{Manifest.permission.BLUETOOTH}, 0);
+            }
+        }
+
+        //Dejamos de descubrir
+        scanBAdap.cancelDiscovery();
+
+        //Extraemos la MAC a usar
+        String newMac  = adapterView.getItemAtPosition(i).toString();
+
+        //Preparamos la actividad SystemCar
+        Intent rel=new Intent(SystemCarActivity.this, SystemCarActivity.class);
+        rel.putExtra("MAC",newMac);
+
+        //Reiniciamos la actividad
+        finish();
+        startActivity(rel);
+
     }
 
     /**
