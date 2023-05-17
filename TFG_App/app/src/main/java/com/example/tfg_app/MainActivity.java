@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Funcion que se encarga de iniciar la actividad asociada al vehiculo electronico de ejemplo
+     * Metodo que se encarga de iniciar la actividad asociada al vehiculo electronico de ejemplo
      */
     public void startSystem1(){
         //Creamos el Intent necesario para iniciar la actividad SystemCarActivity

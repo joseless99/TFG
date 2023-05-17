@@ -185,9 +185,9 @@ public class BluetoothThread extends Thread {
 
 
     /**
-     * Funcion run() de la clase Thread sobre-excritas. Esta se encargara ahora de inicializar la comunicacion
+     * Metodo run() de la clase Thread sobre-excritas. Esta se encargara ahora de inicializar la comunicacion
      * bluetooth de la aplicacion con un dispositivo receptor. Esta se ejecutara cuando, al instaciar la clase
-     * en una actividad se ejecute la funcion start() heredada de la clase Thread.
+     * en una actividad se ejecute la metodo start() heredada de la clase Thread.
      *
      * Si la comunicacion se ha llevado acabo exitosamente, el usuario vera en la interfaz que el boton de conexion
      * bluetooth ha cambiado a color verde, ademas de que el LED del HC-06 dejara de parpadear.
@@ -283,14 +283,14 @@ public class BluetoothThread extends Thread {
     }
 
     /**
-     * Esta funcion se encarga de crear un hilo, por el que se puedan recibir datos que el modulo bluetoth
+     * Este metodo se encarga de crear un hilo, por el que se puedan recibir datos que el modulo bluetoth
      * remoto envie a nuestra app. Los datos se envia a una TextView, que se almacenara en la clase
      *
      * @param vista: Objeto TextView que recibira los datos que se leen de InputStream. Valores esperados
      *          -null: se usara la TextView que esta cargada en la clase, cuando se instanció.
      *          -TextView: se establecera como Textview de la clase y se le enviara los datos leidos de InputStream a esta
      *
-     * NOTA: En caso de que tanto vista como la TextView de la clase sean null, esta funcion no hara nada
+     * NOTA: En caso de que tanto vista como la TextView de la clase sean null, este metodo no hara nada
      */
     public void inicarLecturaDatos(TextView vista) {
 
@@ -326,7 +326,7 @@ public class BluetoothThread extends Thread {
     }
 
     /**
-     * Funcion encargada de enviar mensajes al dispositivo receptor, a traves del OutputStream de la
+     * Metodo encargada de enviar mensajes al dispositivo receptor, a traves del OutputStream de la
      * Comunicacion bluetooth
      *
      * @param data: Informacion a enviar al receptor
@@ -359,9 +359,9 @@ public class BluetoothThread extends Thread {
     }
 
     /**
-     *Funcion encargada de leer el buffer de datos que el movil recibe del arduino.
+     *Metodo encargada de leer el buffer de datos que el movil recibe del arduino.
      *
-     *En cada llamada de la funcion, se leen los datos de InputStream hasta llegar a un final de linea
+     *En cada llamada del metodo, se leen los datos de InputStream hasta llegar a un final de linea
      *
      * @return String: Cadena String de los datos que se han leido del InputStream
      */
@@ -373,7 +373,7 @@ public class BluetoothThread extends Thread {
 
 
     /**
-     * Funcion encargada de cerrar la comunicacion con el modulo bluetooth remoto.
+     * Metodo encargada de cerrar la comunicacion con el modulo bluetooth remoto.
      *
      * Esta se encargara de cerrar todos los procesos asociados a la comunicacion con el modulo bluetooth
      * remoto. Solo se usa en destroyThread() cuando vamos a cerrar la conexion y descartar este Thread
@@ -425,7 +425,7 @@ public class BluetoothThread extends Thread {
 
 
     /**
-     * Funcion a la que se llama para poder destruir correctamente la clase BluetoothThread, o para cerrar
+     * Metodo que se llama para poder destruir correctamente la clase BluetoothThread, o para cerrar
      * definitivamente la comunicacion bluetooth.
      *
      * Esta hara primero una llamada al metodo finConexion() con el que cerrar la conexion. Por ultimo
@@ -433,7 +433,6 @@ public class BluetoothThread extends Thread {
      *
      */
     public void destroyThread(){
-
         finConexion();
         interrupt();
     }
