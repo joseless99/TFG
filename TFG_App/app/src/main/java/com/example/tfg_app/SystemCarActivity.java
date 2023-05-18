@@ -3,7 +3,6 @@ package com.example.tfg_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -23,7 +22,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -186,7 +184,8 @@ public class SystemCarActivity extends AppCompatActivity {
 
 
     /**
-     * Metodo encargado de resetear los colores de los botones del system_car_layout.xml al color inicial definicdo
+     * Metodo encargado de resetear los colores de los botones del system_car_layout.xml al color
+     * inicial definicdo
      */
     private void resetColor() {
         //Variable que almacena el color por defecto de los botones decidido

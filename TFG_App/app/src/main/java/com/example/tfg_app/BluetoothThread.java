@@ -4,27 +4,19 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.ParcelUuid;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -128,7 +120,6 @@ public class BluetoothThread extends Thread {
         this.bUUID = newUuid;
     }
 
-
     public void setbMAC(String newMac) {
         this.bMAC = newMac;
     }
@@ -174,7 +165,6 @@ public class BluetoothThread extends Thread {
         return this.vistaTxt;
     }
 
-
     public UUID getbUUID() {
         return this.bUUID;
     }
@@ -203,17 +193,19 @@ public class BluetoothThread extends Thread {
         //Para dispositivos con API<31(Android 11 o previos) Solicitanos permisos BLUETOOTH
         if (Build.VERSION.SDK_INT >= 31) {//API>=31
             //Verificamos que tengamos o no los permisos necesarios
-            if (ActivityCompat.checkSelfPermission(actividadPadre.getApplicationContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(actividadPadre.getApplicationContext(),
+                    Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                 //Solicitamos el permiso de BLUETOOTH_CONNECT al no tenerlo
-                ActivityCompat.requestPermissions(getAppCompatActivity(), new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
+                ActivityCompat.requestPermissions(getAppCompatActivity(),
+                        new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
             }
         } else {//API<31
             //Verificamos que tengamos o no los permisos necesarios
-            if (ActivityCompat.checkSelfPermission(actividadPadre.getApplicationContext(), Manifest.permission.BLUETOOTH)
-                    != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(actividadPadre.getApplicationContext(),
+                    Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
                 //Solicitamos el permiso de BLUETOOTH al no tenerlo
-                ActivityCompat.requestPermissions(getAppCompatActivity(), new String[]{Manifest.permission.BLUETOOTH},
-                        0);
+                ActivityCompat.requestPermissions(getAppCompatActivity(),
+                        new String[]{Manifest.permission.BLUETOOTH}, 0);
             }
         }
 
@@ -380,8 +372,10 @@ public class BluetoothThread extends Thread {
      *
      */
     private void finConexion() {
-        if (ActivityCompat.checkSelfPermission(actividadPadre.getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getAppCompatActivity(),new String[]{Manifest.permission.BLUETOOTH_SCAN},0);
+        if (ActivityCompat.checkSelfPermission(actividadPadre.getApplicationContext(),
+                Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getAppCompatActivity(),
+                    new String[]{Manifest.permission.BLUETOOTH_SCAN},0);
         }
         if (this.bAdapter.isDiscovering()) {
 
@@ -418,11 +412,6 @@ public class BluetoothThread extends Thread {
         this.botonConexion = null;
         this.vistaTxt = null;
     }
-
-
-
-
-
 
     /**
      * Metodo que se llama para poder destruir correctamente la clase BluetoothThread, o para cerrar

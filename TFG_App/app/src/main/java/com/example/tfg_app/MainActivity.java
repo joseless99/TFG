@@ -1,7 +1,6 @@
 package com.example.tfg_app;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
